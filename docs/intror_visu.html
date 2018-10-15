@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Visualiser des données ou des résultats</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/lumen.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/font-awesome-5.0.13/css/fa-svg-with-js.css" rel="stylesheet" />
+<script src="site_libs/font-awesome-5.0.13/js/fontawesome-all.min.js"></script>
+<script src="site_libs/font-awesome-5.0.13/js/fa-v4-shims.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 54px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+
+.section h2 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h3 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h4 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h5 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h6 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Modèle linéaire pour l'écologie</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Organisation</a>
+</li>
+<li>
+  <a href="https://github.com/MarieEtienne/coursml">
+    <span class="fa fa-github"></span>
+     
+    dépôt github
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-child"></span>
+     
+    Introduction à R
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="intror_presentation.html">Présentation du logiciel R</a>
+    </li>
+    <li>
+      <a href="intror_rstudio.html">Environnement RStudio</a>
+    </li>
+    <li>
+      <a href="intror_manip.html">Manipulation de données</a>
+    </li>
+    <li>
+      <a href="intror_visu.html">Visualisation</a>
+    </li>
+    <li>
+      <a href="intror_rappel.html">Rappels de statistique</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-adjust"></span>
+     
+    Echantillonnage
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="echant_variabilite.html">Statistique inférentielle, généralités</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-tilde"></span>
+     
+    Ajustement de modèles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ajust_modele.html">La modélisation</a>
+    </li>
+    <li>
+      <a href="ajust_vrais.html">Vraisemblance de modèles usuels</a>
+    </li>
+    <li>
+      <a href="ajust_estim.html">Estimation par maximum de vraisemblance</a>
+    </li>
+    <li>
+      <a href="ajust_tests.html">Intervalles de confiance et tests</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Visualiser des données ou des résultats</h1>
+
+</div>
+
+
+<div id="simple-plots" class="section level1">
+<h1>Simple plots</h1>
+<p>Il est très simple de produire des graphiques dans <code>R</code>. On peut par exemple lire le fichier <code>growth_data.txt</code> et représenter la longueur en fonction de l’âge.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_growth &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&#39;data/growth_data.txt&#39;</span>, <span class="dt">header=</span><span class="ot">TRUE</span>)
+<span class="kw">head</span>(df_growth)</code></pre></div>
+<pre><code>##   age   length
+## 1  19 36.29889
+## 2  12 31.84360
+## 3   1 15.77166
+## 4  17 33.56730
+## 5  38 39.41566
+## 6  11 30.48877</code></pre>
+<p>Que fait la commande :</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(length <span class="op">~</span><span class="st"> </span>age)</code></pre></div>
+<p>Pourquoi, cela ne fonctionne t il pas ? Quel est le message d’erreur ?</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(length <span class="op">~</span><span class="st"> </span>age, <span class="dt">data=</span>df_growth)</code></pre></div>
+<p><img src="intror_visu_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Pourquoi est ce que ca fonctionne ? Quelles autres alternatives pouvez vous proposer ?</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(df_growth<span class="op">$</span>length <span class="op">~</span><span class="st"> </span>df_growth<span class="op">$</span>age)</code></pre></div>
+<p><img src="intror_visu_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>ou encore</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">with</span>(df_growth, <span class="kw">plot</span>(length <span class="op">~</span><span class="st"> </span>age))</code></pre></div>
+<p><img src="intror_visu_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>et aussi</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(<span class="dt">y =</span> length, <span class="dt">x =</span> age, <span class="dt">data=</span>df_growth)</code></pre></div>
+<p>Expliquer les différentes versions.</p>
+<div id="avec-de-la-couleur-pour-faire-joli" class="section level2">
+<h2>Avec de la couleur pour faire joli</h2>
+<p>Si on veut des points en rouge</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(length <span class="op">~</span><span class="st"> </span>age, <span class="dt">col =</span> <span class="st">&#39;red&#39;</span>, <span class="dt">data =</span> df_growth)</code></pre></div>
+<p><img src="intror_visu_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+<div id="avec-de-la-couleur-car-cest-utile" class="section level2">
+<h2>Avec de la couleur car c’est utile</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_longline &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="dt">file =</span> <span class="st">&#39;data/LonglineExample.csv&#39;</span>, <span class="dt">skip =</span> <span class="dv">3</span>, <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">sep =</span> <span class="st">&#39;;&#39;</span>)
+<span class="kw">head</span>(df_longline, <span class="dt">n=</span><span class="dv">3</span>)</code></pre></div>
+<pre><code>##   Year DFO_STAT_AREA_CODE Lat_start Lon_start soaktime_mn
+## 1 2003                 12     50.81   -127.66         127
+## 2 2003                 12     50.88   -127.64         128
+## 3 2003                 12     50.93   -127.77         127
+##   Nyelloweye_caught Nquillback_caught Ndogfish_caught Nhooks_with_bait
+## 1                 6                 9               6              119
+## 2                 0                22               0              166
+## 3                 3                46               0               50
+##   Nhooks_empty Nhooks Ntot Nother
+## 1           27    196   50     29
+## 2           25    229   38     16
+## 3           73    222   99     50</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(Ntot <span class="op">~</span><span class="st"> </span>soaktime_mn, <span class="dt">col =</span> DFO_STAT_AREA_CODE, <span class="dt">data =</span> df_longline)</code></pre></div>
+<p><img src="intror_visu_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(Ntot <span class="op">~</span><span class="st">  </span>DFO_STAT_AREA_CODE, <span class="dt">col =</span> Year, <span class="dt">data =</span> df_longline)</code></pre></div>
+<p><img src="intror_visu_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Le langage objet</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_longline<span class="op">$</span>dfo_area_factor &lt;-<span class="st"> </span><span class="kw">as.factor</span>(df_longline<span class="op">$</span>DFO_STAT_AREA_CODE)
+<span class="kw">plot</span>(Ntot <span class="op">~</span><span class="st">  </span>dfo_area_factor, <span class="dt">data =</span> df_longline)</code></pre></div>
+<p><img src="intror_visu_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>Représenter le nombre total d’hameçons occupés en fonction de l’année, soit en considérant l’année comme une variable quantitative, soit comme un facteur.</p>
+<p>Les graphiques en <code>R</code>, sont simples à produire, mais assez laids.</p>
+<p>Il est possible de les mettre à notre goût mais c’est parfois un peu pénible.</p>
+</div>
+</div>
+<div id="graphique-avec-ggplot2" class="section level1">
+<h1>Graphique avec <code>ggplot2</code></h1>
+<div id="des-idees-sur-ce-package" class="section level2">
+<h2>Des idées sur ce package</h2>
+<ul>
+<li>developed by Hadley Wickham (Rice University, Houston, USA)</li>
+<li>highly recommended R packages to work with ggplot2: reshape2 and plyr (also developed by H. Wickham)</li>
+<li>first version called in 2007</li>
+</ul>
+<div id="online-resources" class="section level3">
+<h3>Online resources</h3>
+<ul>
+<li>ggplot2 official documentation: (<a href="http://docs.ggplot2.org/current/" class="uri">http://docs.ggplot2.org/current/</a>)</li>
+<li>R code related to ggplot2 cookbook:(<a href="http://www.cookbook-r.com/Graphs/" class="uri">http://www.cookbook-r.com/Graphs/</a>)</li>
+<li>R code related to useR! ggplot2 book:(<a href="http://ggplot2.org/book/" class="uri">http://ggplot2.org/book/</a>)</li>
+<li>Google groups to ask questions: (<a href="mailto:ggplot2@googlegroups.com">ggplot2@googlegroups.com</a>)</li>
+<li>Statistical tools for high-throughput data analysis:(<a href="http://www.sthda.com/english/wiki/ggplot2-essentials" class="uri">http://www.sthda.com/english/wiki/ggplot2-essentials</a>)</li>
+<li>Github repository: <a href="https://github.com/yhat/ggplot/" class="uri">https://github.com/yhat/ggplot/</a>)</li>
+<li>RStudio Cheat Sheet : probably the most useful (<a href="http://www.rstudio.com/wp-content/uploads/2015/12/ggplot2-cheatsheet-2.0.pdf" class="uri">http://www.rstudio.com/wp-content/uploads/2015/12/ggplot2-cheatsheet-2.0.pdf</a>)</li>
+</ul>
+</div>
+</div>
+<div id="idee-principale" class="section level2">
+<h2>Idée principale</h2>
+<p>Le principe de base qui est de séparer les données de la représentation graphique et de diviser la représentation en éléments de base tels que les courbes, les axes ou les labels.</p>
+<p>C’est un peu abstrait, lançons nous</p>
+</div>
+<div id="premier-exemple" class="section level2">
+<h2>Premier exemple</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ggplot2)
+<span class="kw">ggplot</span>(<span class="dt">data=</span>df_longline) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">x =</span> DFO_STAT_AREA_CODE, <span class="dt">y =</span> Ntot)) </code></pre></div>
+<p><img src="intror_visu_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(<span class="dt">data=</span>df_longline) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">x =</span> dfo_area_factor, <span class="dt">y =</span> Ntot)) </code></pre></div>
+<p><img src="intror_visu_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(<span class="dt">data=</span>df_longline) <span class="op">+</span><span class="st"> </span><span class="kw">geom_boxplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> dfo_area_factor, <span class="dt">y =</span> Ntot)) </code></pre></div>
+<p><img src="intror_visu_files/figure-html/unnamed-chunk-10-3.png" width="672" /></p>
+<p>On peut facilement différencier les années, il faut tut d’abord indiquer que l’année est un facteur</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_longline<span class="op">$</span>year_fact &lt;-<span class="st"> </span><span class="kw">as.factor</span>(df_longline<span class="op">$</span>Year)
+<span class="kw">ggplot</span>(<span class="dt">data=</span>df_longline) <span class="op">+</span><span class="st"> </span><span class="kw">geom_boxplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> dfo_area_factor, <span class="dt">y =</span> Ntot, <span class="dt">fill=</span>year_fact)) </code></pre></div>
+<p><img src="intror_visu_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>Pour changer la gamme de couleurs, notamment pour les daltoniens</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(<span class="dt">data=</span>df_longline) <span class="op">+</span><span class="st"> </span><span class="kw">geom_boxplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> dfo_area_factor, <span class="dt">y =</span> Ntot, <span class="dt">fill=</span>year_fact)) <span class="op">+</span><span class="st"> </span><span class="kw">scale_fill_viridis_d</span>(<span class="dt">option =</span> <span class="st">&#39;E&#39;</span>)</code></pre></div>
+<p><img src="intror_visu_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>Si on veut rajouter la moyenne</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(<span class="dt">data=</span>df_longline, <span class="kw">aes</span>(<span class="dt">x =</span> dfo_area_factor, <span class="dt">y =</span> Ntot, <span class="dt">fill=</span>year_fact)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_boxplot</span>()  <span class="op">+</span>
+<span class="st">  </span><span class="kw">stat_summary</span>(<span class="dt">fun.y=</span>mean,  <span class="dt">geom=</span><span class="st">&quot;point&quot;</span>, <span class="kw">aes</span>(<span class="dt">group =</span> year_fact, <span class="dt">col =</span> year_fact), 
+               <span class="dt">shape=</span><span class="dv">18</span>, <span class="dt">size=</span><span class="dv">3</span>,<span class="dt">show.legend =</span> <span class="ot">TRUE</span>, <span class="dt">position=</span><span class="kw">position_dodge</span>(<span class="dt">width=</span><span class="fl">0.8</span>)) <span class="op">+</span><span class="st"> </span><span class="kw">scale_fill_viridis_d</span>(<span class="dt">option =</span> <span class="st">&#39;E&#39;</span>)</code></pre></div>
+<p><img src="intror_visu_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>De belles possibilités et une communauté très active</p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

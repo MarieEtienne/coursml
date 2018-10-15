@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Manipulation de données</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/lumen.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/font-awesome-5.0.13/css/fa-svg-with-js.css" rel="stylesheet" />
+<script src="site_libs/font-awesome-5.0.13/js/fontawesome-all.min.js"></script>
+<script src="site_libs/font-awesome-5.0.13/js/fa-v4-shims.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 54px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+
+.section h2 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h3 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h4 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h5 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h6 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Modèle linéaire pour l'écologie</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Organisation</a>
+</li>
+<li>
+  <a href="https://github.com/MarieEtienne/coursml">
+    <span class="fa fa-github"></span>
+     
+    dépôt github
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-child"></span>
+     
+    Introduction à R
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="intror_presentation.html">Présentation du logiciel R</a>
+    </li>
+    <li>
+      <a href="intror_rstudio.html">Environnement RStudio</a>
+    </li>
+    <li>
+      <a href="intror_manip.html">Manipulation de données</a>
+    </li>
+    <li>
+      <a href="intror_visu.html">Visualisation</a>
+    </li>
+    <li>
+      <a href="intror_rappel.html">Rappels de statistique</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-adjust"></span>
+     
+    Echantillonnage
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="echant_variabilite.html">Statistique inférentielle, généralités</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-tilde"></span>
+     
+    Ajustement de modèles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ajust_modele.html">La modélisation</a>
+    </li>
+    <li>
+      <a href="ajust_vrais.html">Vraisemblance de modèles usuels</a>
+    </li>
+    <li>
+      <a href="ajust_estim.html">Estimation par maximum de vraisemblance</a>
+    </li>
+    <li>
+      <a href="ajust_tests.html">Intervalles de confiance et tests</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Manipulation de données</h1>
+
+</div>
+
+
+<div id="lecture-de-fichiers-de-donnees" class="section level1">
+<h1>Lecture de fichiers de données</h1>
+<p>Créer un fichier RMarkdown intitulé introR.Rmd</p>
+<div id="lire-des-donnees-presentes-sur-lordinateur" class="section level2">
+<h2>Lire des données présentes sur l’ordinateur</h2>
+<p>Identifier le type de fichier (essentiellement txt, csv ou xlsx)</p>
+<ul>
+<li>Cas d’un fichier texte ou csv : ouvrir le fichier pour indiquer à R comment le lire</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">myData &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="dt">file =</span> <span class="st">&#39;data/LonglineExample.csv&#39;</span>, <span class="dt">skip =</span> <span class="dv">3</span>, <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">sep =</span> <span class="st">&#39;;&#39;</span>)
+<span class="kw">head</span>(myData, <span class="dt">n=</span><span class="dv">3</span>)</code></pre></div>
+<pre><code>##   Year DFO_STAT_AREA_CODE Lat_start Lon_start soaktime_mn
+## 1 2003                 12     50.81   -127.66         127
+## 2 2003                 12     50.88   -127.64         128
+## 3 2003                 12     50.93   -127.77         127
+##   Nyelloweye_caught Nquillback_caught Ndogfish_caught Nhooks_with_bait
+## 1                 6                 9               6              119
+## 2                 0                22               0              166
+## 3                 3                46               0               50
+##   Nhooks_empty Nhooks Ntot Nother
+## 1           27    196   50     29
+## 2           25    229   38     16
+## 3           73    222   99     50</code></pre>
+</div>
+<div id="ecrire-une-table-de-donnees" class="section level2">
+<h2>Ecrire une table de données</h2>
+<p>Pour définir une table de données dans R contenant les informations sur les intervenants de ce cours, on peut utiliser la commande suivante :</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">enseignants &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">nom =</span> <span class="kw">c</span>(<span class="st">&#39;Etienne&#39;</span>, <span class="st">&#39;Guitton&#39;</span>, <span class="st">&#39;Lecomte&#39;</span>),
+                          <span class="dt">prenom =</span> <span class="kw">c</span>(<span class="st">&#39;Marie-Pierre&#39;</span>, <span class="st">&#39;Jérôme&#39;</span>, <span class="st">&#39;Jean-Baptiste&#39;</span>),
+                          <span class="dt">mail =</span> <span class="kw">c</span>(<span class="st">&#39;marie-pierre.etienne@agrocampus-ouest.fr&#39;</span>, <span class="st">&#39;jerome.guitton@agrocampus-ouest.fr&#39;</span>, <span class="st">&#39;jean-baptiste.lecomte@agrocampus-ouest.fr&#39;</span>))
+
+enseignants</code></pre></div>
+<pre><code>##       nom        prenom                                      mail
+## 1 Etienne  Marie-Pierre  marie-pierre.etienne@agrocampus-ouest.fr
+## 2 Guitton        Jérôme        jerome.guitton@agrocampus-ouest.fr
+## 3 Lecomte Jean-Baptiste jean-baptiste.lecomte@agrocampus-ouest.fr</code></pre>
+<p>On peut l’enregistrer sur le disque avec la commande</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write.table</span>(enseignants, <span class="dt">file=</span><span class="st">&#39;data/enseignants.txt&#39;</span>, <span class="dt">row.names =</span> F)</code></pre></div>
+<p>Lire le fichier <code>enseignants.txt</code>.</p>
+<p>Refaire l’exercice avec le fichier growth_data.txt</p>
+<p>On évite de lire des fichiers Excel, mais si besoin il existe la fonction <code>read_excel</code> du package <code>readxl</code>̀.</p>
+<p>Installer le package <code>readxl</code> :</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&#39;readxl&#39;</span>) ## une seule fois</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&#39;readxl&#39;</span>) ## avant chaque premiere utilisation du package</code></pre></div>
+</div>
+<div id="lire-des-donnees-depuis-une-url" class="section level2">
+<h2>Lire des données depuis une url</h2>
+<p>On souhaite lire le fichier <a href="http://math.agrocampus-ouest.fr/infoglueDeliverLive/digitalAssets/107906_decath.txt">decathlon</a></p>
+
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">monFichier &lt;-<span class="st"> &#39;http://math.agrocampus-ouest.fr/infoglueDeliverLive/digitalAssets/107906_decath.txt&#39;</span>
+decathlon &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="dt">file =</span> monFichier, <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">sep =</span> <span class="st">&#39;</span><span class="ch">\t</span><span class="st">&#39;</span>)
+<span class="kw">head</span>(decathlon, <span class="dt">n=</span><span class="dv">2</span>)</code></pre></div>
+<pre><code>##        X X100m Longueur Poids Hauteur X400m X110m.haies Disque Perche
+## 1 Sebrle 10.85     7.84 16.36    2.12 48.36       14.05  48.72    5.0
+## 2   Clay 10.44     7.96 15.23    2.06 49.19       14.13  50.11    4.9
+##   Javelot X1500m Classement Nb.pts Epreuve
+## 1   70.52 280.01          1   8893      JO
+## 2   69.71 282.00          2   8820      JO</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">decathlon &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="dt">file =</span> monFichier, <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">sep =</span> <span class="st">&#39;</span><span class="ch">\t</span><span class="st">&#39;</span>, <span class="dt">row.names =</span> <span class="dv">1</span>)
+<span class="kw">head</span>(decathlon, <span class="dt">n=</span><span class="dv">2</span>)</code></pre></div>
+<pre><code>##        X100m Longueur Poids Hauteur X400m X110m.haies Disque Perche
+## Sebrle 10.85     7.84 16.36    2.12 48.36       14.05  48.72    5.0
+## Clay   10.44     7.96 15.23    2.06 49.19       14.13  50.11    4.9
+##        Javelot X1500m Classement Nb.pts Epreuve
+## Sebrle   70.52 280.01          1   8893      JO
+## Clay     69.71 282.00          2   8820      JO</code></pre>
+</div>
+<div id="lire-des-donnees-avec-une-requete-sql-base-de-donnees" class="section level2">
+<h2>Lire des données avec une requête SQL (base de données)</h2>
+<p>Il faut se connecter à la base</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(RODBC)
+<span class="co"># Fait la liste des tables de la base de données connectée</span>
+<span class="kw">sqlTables</span>(connect_base, <span class="dt">tableType =</span> <span class="st">&quot;TABLE&quot;</span>)
+<span class="co"># Fait la liste des colonnes</span>
+<span class="kw">sqlColumns</span>(connect_base, <span class="dt">sqtable =</span> <span class="st">&quot;DonneesTotales&quot;</span>)
+<span class="co"># Extraction par requête SQL</span>
+OtoYFT &lt;-<span class="st"> </span><span class="kw">sqlQuery</span>( <span class="dt">channel =</span> connect_base,
+<span class="dt">query =</span>
+<span class="st">&quot;</span>
+<span class="st">SELECT * FROM DonneesTotales</span>
+<span class="st">WHERE (DonneesTotales.ProblemeSp = &#39;Ok&#39; AND DonneesTotales.REC_Sp=&#39;Y&#39;</span>
+<span class="st">AND DonneesTotales.Otolithe = &#39;OT&#39;)</span>
+<span class="st">&quot;</span>)
+<span class="kw">head</span>(OtoYFT)</code></pre></div>
+</div>
+</div>
+<div id="objet-data.frame" class="section level1">
+<h1>Objet data.frame</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(myData)</code></pre></div>
+<pre><code>## [1] &quot;data.frame&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(myData)</code></pre></div>
+<pre><code>## [1] 210  13</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">colnames</span>(myData)</code></pre></div>
+<pre><code>##  [1] &quot;Year&quot;               &quot;DFO_STAT_AREA_CODE&quot; &quot;Lat_start&quot;         
+##  [4] &quot;Lon_start&quot;          &quot;soaktime_mn&quot;        &quot;Nyelloweye_caught&quot; 
+##  [7] &quot;Nquillback_caught&quot;  &quot;Ndogfish_caught&quot;    &quot;Nhooks_with_bait&quot;  
+## [10] &quot;Nhooks_empty&quot;       &quot;Nhooks&quot;             &quot;Ntot&quot;              
+## [13] &quot;Nother&quot;</code></pre>
+<div id="acceder-aux-colonnes" class="section level2">
+<h2>Accéder aux colonnes</h2>
+<p>Acceder à la variable Year</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(myData<span class="op">$</span>Year, <span class="dt">n=</span><span class="dv">15</span>)</code></pre></div>
+<pre><code>##  [1] 2003 2003 2003 2003 2003 2003 2003 2003 2003 2003 2003 2003 2003 2003
+## [15] 2003</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(myData<span class="op">$</span>Year)</code></pre></div>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    2003    2003    2004    2005    2007    2008</code></pre>
+<p>Donner les numéros des lignes correspondant à l’année 2004</p>
+</div>
+<div id="travailler-sur-les-lignes" class="section level2">
+<h2>Travailler sur les lignes</h2>
+<ul>
+<li>Afficher la première ligne,</li>
+<li>Afficher les lignes 1,4 et 10</li>
+<li>Supprimer une ligne</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(myData, <span class="dt">n=</span><span class="dv">3</span>)</code></pre></div>
+<pre><code>##   Year DFO_STAT_AREA_CODE Lat_start Lon_start soaktime_mn
+## 1 2003                 12     50.81   -127.66         127
+## 2 2003                 12     50.88   -127.64         128
+## 3 2003                 12     50.93   -127.77         127
+##   Nyelloweye_caught Nquillback_caught Ndogfish_caught Nhooks_with_bait
+## 1                 6                 9               6              119
+## 2                 0                22               0              166
+## 3                 3                46               0               50
+##   Nhooks_empty Nhooks Ntot Nother
+## 1           27    196   50     29
+## 2           25    229   38     16
+## 3           73    222   99     50</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(myData[<span class="op">-</span><span class="dv">1</span>,], <span class="dt">n=</span><span class="dv">3</span>)</code></pre></div>
+<pre><code>##   Year DFO_STAT_AREA_CODE Lat_start Lon_start soaktime_mn
+## 2 2003                 12     50.88   -127.64         128
+## 3 2003                 12     50.93   -127.77         127
+## 4 2003                 12     50.87   -127.46         122
+##   Nyelloweye_caught Nquillback_caught Ndogfish_caught Nhooks_with_bait
+## 2                 0                22               0              166
+## 3                 3                46               0               50
+## 4                 0                 9              15              100
+##   Nhooks_empty Nhooks Ntot Nother
+## 2           25    229   38     16
+## 3           73    222   99     50
+## 4           48    216   68     44</code></pre>
+<ul>
+<li>Afficher uniquement les lignes correspondant à l’année 2004</li>
+</ul>
+<p>Solution tidy</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">myData <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(Year<span class="op">==</span><span class="dv">2004</span>)</code></pre></div>
+</div>
+<div id="reordonner" class="section level2">
+<h2>Reordonner</h2>
+<ul>
+<li>Ordonner les lignes selon la latitude</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">myData[<span class="kw">order</span>(myData<span class="op">$</span>Lat_start),] </code></pre></div>
+<pre><code>##     Year DFO_STAT_AREA_CODE Lat_start Lon_start soaktime_mn
+## 198 2005                 14     49.44   -124.18         121
+## 199 2005                 14     49.45   -124.21         120
+## 210 2008                 14     49.45   -124.20         119
+## 200 2005                 14     49.50   -124.70         121
+## 209 2008                 14     49.52   -124.73         120
+## 201 2005                 14     49.54   -124.63         120
+## 202 2005                 14     49.57   -124.70         121
+## 208 2008                 14     49.58   -124.76         119
+## 203 2005                 14     49.74   -124.87         120
+## 207 2008                 14     49.87   -124.83         120
+## 206 2008                 14     49.91   -125.12         120
+## 204 2005                 14     49.92   -125.01         119
+## 197 2003                 14     49.94   -125.15         120
+## 205 2008                 14     49.94   -125.15         120
+## 138 2003                 13     49.99   -125.11         122
+## 185 2007                 13     49.99   -125.11         121
+## 136 2003                 13     50.01   -125.02         120
+## 196 2008                 13     50.01   -124.99         118
+## 184 2007                 13     50.03   -125.01         124
+## 137 2003                 13     50.04   -125.05         122
+## 183 2007                 13     50.04   -125.07         110
+## 190 2008                 13     50.05   -125.17         171
+## 139 2003                 13     50.11   -125.21         119
+## 182 2007                 13     50.11   -125.09          67
+## 181 2007                 13     50.13   -125.12         110
+## 191 2008                 13     50.26   -125.04         116
+## 180 2007                 13     50.30   -125.04         118
+## 192 2008                 13     50.30   -125.10         120
+## 193 2008                 13     50.31   -125.11         120
+## 163 2004                 13     50.32   -125.07         118
+## 166 2005                 13     50.32   -124.98         119
+## 179 2007                 13     50.32   -125.08         126
+## 194 2008                 13     50.33   -124.99         119
+## 195 2008                 13     50.34   -125.01         120
+## 164 2004                 13     50.35   -124.99         120
+## 142 2003                 13     50.36   -125.09         120
+## 132 2003                 13     50.37   -125.78         110
+## 148 2003                 13     50.37   -125.11         121
+## 162 2004                 13     50.37   -125.06         119
+## 178 2007                 13     50.37   -125.10         130
+## 147 2003                 13     50.38   -125.06         121
+## 165 2004                 13     50.38   -124.97         134
+## 133 2003                 13     50.39   -125.54         121
+## 172 2007                 13     50.39   -125.33         125
+## 186 2008                 13     50.39   -125.54         120
+## 171 2007                 13     50.40   -125.34         119
+## 188 2008                 13     50.40   -125.85         127
+## 189 2008                 13     50.42   -125.15         120
+## 140 2003                 13     50.43   -124.95         122
+## 157 2004                 13     50.43   -125.30         119
+## 177 2007                 13     50.43   -125.06         137
+## 141 2003                 13     50.44   -125.01         122
+## 155 2004                 13     50.44   -125.43         120
+## 170 2007                 13     50.44   -125.45         126
+## 131 2003                 13     50.45   -125.95         121
+## 167 2007                 13     50.45   -125.93         111
+## 187 2008                 13     50.45   -126.00         121
+## 80  2004                 12     50.46   -126.17         119
+## 81  2004                 12     50.46   -126.13         120
+## 134 2003                 13     50.46   -125.40         123
+## 158 2004                 13     50.46   -125.27         120
+## 174 2007                 13     50.46   -125.27         114
+## 45  2003                 12     50.47   -126.29         120
+## 123 2007                 12     50.47   -126.04         111
+## 145 2003                 13     50.47   -125.11         118
+## 146 2003                 13     50.47   -125.05         119
+## 46  2003                 12     50.48   -126.01         120
+## 135 2003                 13     50.48   -125.35         120
+## 150 2003                 13     50.48   -125.57         119
+## 152 2004                 13     50.48   -125.57         120
+## 159 2004                 13     50.48   -125.05         120
+## 121 2007                 12     50.49   -126.40         158
+## 153 2004                 13     50.49   -125.58         121
+## 156 2004                 13     50.49   -125.38         121
+## 118 2007                 12     50.50   -126.63         128
+## 122 2007                 12     50.50   -126.22         124
+##     Nyelloweye_caught Nquillback_caught Ndogfish_caught Nhooks_with_bait
+## 198                 0                 0             116               36
+## 199                 6                 3             138               39
+## 210                11                 0              92               86
+## 200                 0                18             123               19
+## 209                 0                 0             141                4
+## 201                16                 7              41               83
+## 202                 0                 0             171                5
+## 208                 0                 0             122               16
+## 203                 0                 0              96               43
+## 207                 1                 1             154                0
+## 206                 0                 3             104               13
+## 204                 3                 2             170                8
+## 197                 0                 1             133                9
+## 205                 0                 0             178                3
+## 138                 0                 0             156                1
+## 185                 0                 0             194                0
+## 136                 4                 3             159                3
+## 196                 1                 1             155                9
+## 184                 0                 0             156                1
+## 137                 2                 0             104                1
+## 183                 0                 1             126               34
+## 190                 2                 1             141               34
+## 139                 0                 1             111                9
+## 182                 0                 0             182                1
+## 181                 1                 1              95              115
+## 191                 3                 3              94               99
+## 180                 1                 6             112               70
+## 192                 4                 3              24              177
+## 193                 1                 5             144               16
+## 163                 7                 8              36              141
+## 166                 2                 2             153                0
+## 179                 4                13              20              161
+## 194                 7                 1              43              143
+## 195                 2                 1             176               10
+## 164                 7                 2              42               29
+## 142                12                19              71               60
+## 132                 0                 0               8               73
+## 148                 6                 3              32              136
+## 162                 7                 3              73              106
+## 178                 2                 6              18              179
+## 147                 6                 5              86               63
+## 165                 3                 3             170               10
+## 133                 0                 0             158                1
+## 172                 2                13             110               61
+## 186                 0                 4             164                0
+## 171                 5                 7              97               74
+## 188                 0                 3             133                4
+## 189                 0                 2             149                0
+## 140                17                 8             122               26
+## 157                 1                 2               4              191
+## 177                 7                 2             115               65
+## 141                24                 4             113               47
+## 155                 5                 7             121               31
+## 170                 1                21              72               71
+## 131                 0                 0             151                0
+## 167                 0                 0             131                0
+## 187                 2                16              20              153
+## 80                  3                 8               5               76
+## 81                 12                 5               9              142
+## 134                 1                13             103               20
+## 158                 7                16              97               34
+## 174                 0                 9               4              189
+## 45                 10                 1              95               54
+## 123                 0                 2              10              137
+## 145                 0                 9              61              122
+## 146                 0                 6             149                0
+## 46                  3                18              97               27
+## 135                 0                 1             148                1
+## 150                 5                 3              74               57
+## 152                 0                 0             168                4
+## 159                 7                16              25              122
+## 121                 0                 5              73               28
+## 153                 6                 2             132               23
+## 156                 0                 1             164                0
+## 118                 1                34              68               20
+## 122                 1                 7              27               59
+##     Nhooks_empty Nhooks Ntot Nother
+## 198           52    204  116      0
+## 199           37    224  148      1
+## 210           24    217  107      4
+## 200           59    222  144      3
+## 209           60    215  151     10
+## 201           47    221   91     27
+## 202           40    221  176      5
+## 208           42    210  152     30
+## 203           73    222  106     10
+## 207           62    218  156      0
+## 206           59    211  139     32
+## 204           40    224  176      1
+## 197           79    224  136      2
+## 205           24    207  180      2
+## 138           61    220  158      2
+## 185           32    226  194      0
+## 136           54    234  177     11
+## 196           52    220  159      2
+## 184           58    215  156      0
+## 137          111    222  110      4
+## 183           63    225  128      1
+## 190           32    214  148      4
+## 139           95    225  121      9
+## 182           40    223  182      0
+## 181           16    229   98      1
+## 191           20    220  101      1
+## 180           34    224  120      1
+## 192            9    220   34      3
+## 193           54    220  150      0
+## 163           30    225   54      3
+## 166           63    220  157      0
+## 179           22    222   39      2
+## 194           26    221   52      1
+## 195           34    223  179      0
+## 164           19    104   56      5
+## 142           58    222  104      2
+## 132          107    216   36     28
+## 148           46    223   41      0
+## 162           37    226   83      0
+## 178           20    225   26      0
+## 147           65    226   98      1
+## 165           35    223  178      2
+## 133           74    235  160      2
+## 172           22    214  131      6
+## 186           51    223  172      4
+## 171           25    213  114      5
+## 188           71    216  141      5
+## 189           52    204  152      1
+## 140           51    226  149      2
+## 157           24    225   10      3
+## 177           34    223  124      0
+## 141           36    224  141      0
+## 155           58    223  134      1
+## 170           51    225  103      9
+## 131           67    221  154      3
+## 167           87    222  135      4
+## 187           19    219   47      9
+## 80           112    224   36     20
+## 81            49    229   38     12
+## 134           75    213  118      1
+## 158           68    224  122      2
+## 174           15    225   21      8
+## 45            45    212  113      7
+## 123           50    223   36     24
+## 145           28    222   72      2
+## 146           68    223  155      0
+## 46            57    226  142     24
+## 135           72    223  150      1
+## 150           82    221   82      0
+## 152           51    224  169      1
+## 159           55    226   49      1
+## 121           82    224  114     36
+## 153           59    222  140      0
+## 156           58    223  165      0
+## 118           56    209  133     30
+## 122           83    225   83     48
+##  [ reached getOption(&quot;max.print&quot;) -- omitted 134 rows ]</code></pre>
+</div>
+<div id="concatener-deux-tables" class="section level2">
+<h2>Concaténer deux tables</h2>
+<p>Fabriquer 2 jeux de données pour les années 2003 et 2004 et les stocker dans <code>myData2004</code>̀ et myData23</p>
+<p>Que fait la commande rbind(myData2003, myData2004) ?</p>
+<p>solution tidy</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">myData2003 <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">bind_rows</span>( myData2004)</code></pre></div>
+<pre><code>##     Year DFO_STAT_AREA_CODE Lat_start Lon_start soaktime_mn
+## 1   2003                 12     50.81   -127.66         127
+## 2   2003                 12     50.88   -127.64         128
+## 3   2003                 12     50.93   -127.77         127
+## 4   2003                 12     50.87   -127.46         122
+## 5   2003                 12     50.89   -127.42         134
+## 6   2003                 12     50.88   -127.39         121
+## 7   2003                 12     50.88   -127.24         120
+## 8   2003                 12     50.84   -127.09         121
+## 9   2003                 12     50.73   -127.41         124
+## 10  2003                 12     50.90   -127.01         126
+## 11  2003                 12     50.87   -126.68         127
+## 12  2003                 12     50.87   -126.65         111
+## 13  2003                 12     50.85   -126.61         123
+## 14  2003                 12     50.80   -126.81         138
+## 15  2003                 12     50.77   -126.53         122
+## 16  2003                 12     50.67   -126.69         124
+## 17  2003                 12     50.72   -126.78         146
+## 18  2003                 12     50.75   -126.64         123
+## 19  2003                 12     50.78   -126.69         120
+## 20  2003                 12     50.80   -126.57         122
+## 21  2003                 12     50.82   -126.38         120
+## 22  2003                 12     50.82   -126.36         129
+## 23  2003                 12     50.77   -126.21         121
+## 24  2003                 12     50.72   -126.18         122
+## 25  2003                 12     50.65   -126.25         123
+## 26  2003                 12     50.61   -126.33         126
+## 27  2003                 12     50.63   -126.43         135
+## 28  2003                 12     50.61   -126.73         120
+## 29  2003                 12     50.67   -127.15         122
+## 30  2003                 12     50.67   -126.97         142
+## 31  2003                 12     50.78   -126.90         120
+## 32  2003                 12     50.80   -126.88         120
+## 33  2003                 12     50.76   -126.88         123
+## 34  2003                 12     50.63   -127.19         120
+## 35  2003                 12     50.71   -127.21         140
+## 36  2003                 12     50.64   -127.20         122
+## 37  2003                 12     50.63   -127.07         126
+## 38  2003                 12     50.63   -127.05         123
+## 39  2003                 12     50.61   -126.93         122
+## 40  2003                 12     50.59   -126.76         136
+## 41  2003                 12     50.70   -126.86         120
+## 42  2003                 12     50.64   -126.85         122
+## 43  2003                 12     50.56   -126.80         120
+## 44  2003                 12     50.54   -126.77         126
+## 45  2003                 12     50.47   -126.29         120
+## 46  2003                 12     50.48   -126.01         120
+## 47  2003                 13     50.45   -125.95         121
+## 48  2003                 13     50.37   -125.78         110
+## 49  2003                 13     50.39   -125.54         121
+## 50  2003                 13     50.46   -125.40         123
+## 51  2003                 13     50.48   -125.35         120
+## 52  2003                 13     50.01   -125.02         120
+## 53  2003                 13     50.04   -125.05         122
+## 54  2003                 13     49.99   -125.11         122
+## 55  2003                 13     50.11   -125.21         119
+## 56  2003                 13     50.43   -124.95         122
+## 57  2003                 13     50.44   -125.01         122
+## 58  2003                 13     50.36   -125.09         120
+## 59  2003                 13     50.59   -124.87         119
+## 60  2003                 13     50.50   -125.11         120
+## 61  2003                 13     50.47   -125.11         118
+## 62  2003                 13     50.47   -125.05         119
+## 63  2003                 13     50.38   -125.06         121
+## 64  2003                 13     50.37   -125.11         121
+## 65  2003                 13     50.58   -125.56         119
+## 66  2003                 13     50.48   -125.57         119
+## 67  2003                 14     49.94   -125.15         120
+## 68  2004                 12     50.61   -127.08         120
+## 69  2004                 12     50.60   -126.91         120
+## 70  2004                 12     50.68   -126.93         122
+## 71  2004                 12     50.73   -126.98         121
+## 72  2004                 12     50.77   -126.90         121
+## 73  2004                 12     50.82   -126.96         126
+## 74  2004                 12     50.84   -127.09         122
+## 75  2004                 12     50.82   -127.01         121
+## 76  2004                 12     50.90   -127.00         120
+##     Nyelloweye_caught Nquillback_caught Ndogfish_caught Nhooks_with_bait
+## 1                   6                 9               6              119
+## 2                   0                22               0              166
+## 3                   3                46               0               50
+## 4                   0                 9              15              100
+## 5                   2                 3               5              119
+## 6                   1                13               9              137
+## 7                   1                12              23              128
+## 8                   1                 8              60               65
+## 9                   0                 0             141               13
+## 10                  0                 0             117               28
+## 11                  0                 6               6              192
+## 12                  0                 2             140               46
+## 13                  1                 6             157               11
+## 14                  0                 1              92               80
+## 15                  3                 6               9              176
+## 16                  0                 0              12              197
+## 17                  5                27              40              113
+## 18                  0                 0              70               65
+## 19                  3                11               9              168
+## 20                  0                 1             104               65
+## 21                  4                 8              45              116
+## 22                 12                14              84               44
+## 23                  2                 1             100               59
+## 24                  0                 2              30              166
+## 25                  0                 6              18              175
+## 26                  0                 8              41              137
+## 27                  0                 0             142               30
+## 28                  0                32              18               84
+## 29                  0                 0              20                1
+## 30                  0                 1              21              142
+## 31                  1                19              72               34
+## 32                  0                 0              64               54
+## 33                  0                 6              35              130
+## 34                  0                 0              29               59
+## 35                  0                 8              27               18
+## 36                  0                 0               3              129
+## 37                  0                 3              46               22
+## 38                  0                 0              27               65
+## 39                  0                 0              61               56
+## 40                  0                 6              18                5
+## 41                  0                 2              68               46
+## 42                  0                 5               4               24
+## 43                  0                 3               3               40
+## 44                  3                 0              72               12
+## 45                 10                 1              95               54
+## 46                  3                18              97               27
+## 47                  0                 0             151                0
+## 48                  0                 0               8               73
+## 49                  0                 0             158                1
+## 50                  1                13             103               20
+## 51                  0                 1             148                1
+## 52                  4                 3             159                3
+## 53                  2                 0             104                1
+## 54                  0                 0             156                1
+## 55                  0                 1             111                9
+## 56                 17                 8             122               26
+## 57                 24                 4             113               47
+## 58                 12                19              71               60
+## 59                  0                 0             110               42
+## 60                  9                24              82               61
+## 61                  0                 9              61              122
+## 62                  0                 6             149                0
+## 63                  6                 5              86               63
+## 64                  6                 3              32              136
+## 65                  4                18               7              155
+## 66                  5                 3              74               57
+## 67                  0                 1             133                9
+## 68                  0                 0              54                0
+## 69                  0                 0              91                0
+## 70                  1                 3              16               55
+## 71                  0                 3             120                3
+## 72                  0                12              85               39
+## 73                  0                 0               1               13
+## 74                  2                 5               7               93
+## 75                  0                 2              69               30
+## 76                  1                 0             113               11
+##     Nhooks_empty Nhooks Ntot Nother
+## 1             27    196   50     29
+## 2             25    229   38     16
+## 3             73    222   99     50
+## 4             48    216   68     44
+## 5             45    213   49     39
+## 6             21    214   56     33
+## 7             31    224   65     29
+## 8             47    219  107     38
+## 9             57    221  151     10
+## 10            49    207  130     13
+## 11            15    222   15      3
+## 12            30    219  143      1
+## 13            39    214  164      0
+## 14            41    214   93      0
+## 15            20    225   29     11
+## 16             4    220   19      7
+## 17            19    221   89     17
+## 18            70    226   91     21
+## 19            13    225   44     21
+## 20            41    215  109      4
+## 21            40    220   64      7
+## 22            60    225  121     11
+## 23            60    224  105      2
+## 24            24    223   33      1
+## 25            26    225   24      0
+## 26            20    211   54      5
+## 27            51    224  143      1
+## 28            51    224   89     39
+## 29           148    215   66     46
+## 30            56    240   42     20
+## 31            53    228  141     49
+## 32            70    225  101     37
+## 33            39    218   49      8
+## 34            96    211   56     27
+## 35            74    220  128     93
+## 36            50    192   13     10
+## 37           114    221   85     36
+## 38           105    218   48     21
+## 39            89    215   70      9
+## 40           127    221   89     65
+## 41            84    223   93     23
+## 42           155    222   43     34
+## 43           149    223   34     28
+## 44            60    221  149     74
+## 45            45    212  113      7
+## 46            57    226  142     24
+## 47            67    221  154      3
+## 48           107    216   36     28
+## 49            74    235  160      2
+## 50            75    213  118      1
+## 51            72    223  150      1
+## 52            54    234  177     11
+## 53           111    222  110      4
+## 54            61    220  158      2
+## 55            95    225  121      9
+## 56            51    226  149      2
+## 57            36    224  141      0
+## 58            58    222  104      2
+## 59            72    224  110      0
+## 60            48    225  116      1
+## 61            28    222   72      2
+## 62            68    223  155      0
+## 63            65    226   98      1
+## 64            46    223   41      0
+## 65            39    224   30      1
+## 66            82    221   82      0
+## 67            79    224  136      2
+## 68           129    184   55      1
+## 69           122    217   95      4
+## 70           106    221   60     40
+## 71            88    219  128      5
+## 72            64    214  111     14
+## 73            11     26    2      1
+## 74            87    220   40     26
+## 75            93    209   86     15
+## 76            89    226  126     12
+##  [ reached getOption(&quot;max.print&quot;) -- omitted 41 rows ]</code></pre>
+</div>
+<div id="sauvegarder-les-resultats" class="section level2">
+<h2>Sauvegarder les résultats</h2>
+<p>Dans un fichier texte</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write.table</span>(<span class="dt">x =</span> myData2004, <span class="dt">file =</span> <span class="st">&#39;table2004.txt&#39;</span>, <span class="dt">sep =</span> <span class="st">&#39; &#39;</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<p>Sous forme compressée dans un fichier Rdata.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">save</span>(<span class="dt">list =</span> <span class="st">&#39;myData2004&#39;</span>, <span class="dt">file =</span> <span class="st">&#39;table2004.Rdata&#39;</span>)
+<span class="kw">load</span>(<span class="st">&#39;table2004.Rdata&#39;</span>)</code></pre></div>
+</div>
+<div id="petit-exercice" class="section level2">
+<h2>Petit exercice</h2>
+<p>Charger le fichier iris, puis * Garder uniquement l’espece virginica * Supprimer toutes les observations correspondantes à des largeurs de sépale inférieures à 3 * Ordonner la table restante selon la longueur des sépales. * Ajouter une colonne contenant la longueur des sépals au carré.</p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

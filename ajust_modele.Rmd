@@ -1,0 +1,37 @@
+---
+title: "Modélisation statistique"
+output: 
+  html_document:
+   toc: true
+   toc_float: true
+   logo: LogoAgrocampusOuest.jpg
+   number_sections: false
+   highlight: tango
+   css: style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+library(tibble)
+library(tidyr)
+library(stringr)
+library(purrr)
+library(dplyr)
+```
+
+
+
+[Les diapos du cours ](ajust_modele.pdf)
+
+
+Les données du Sénégal 
+
+TP : 
+[Le Thiof au Sénégal](http://www.au-senegal.com/+-Thiof-+.html?lang=fr)
+[les données](data/data_PA_Thiof.txt)
+
+
+
+## Devoir à rendre 
+
+[les données Pêche industrielle](data/data_PI_Thiof.txt)

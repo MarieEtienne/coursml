@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Variabilité d’échantillonnage</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/lumen.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/font-awesome-5.0.13/css/fa-svg-with-js.css" rel="stylesheet" />
+<script src="site_libs/font-awesome-5.0.13/js/fontawesome-all.min.js"></script>
+<script src="site_libs/font-awesome-5.0.13/js/fa-v4-shims.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 54px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+
+.section h2 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h3 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h4 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h5 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h6 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Modèle linéaire pour l'écologie</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Organisation</a>
+</li>
+<li>
+  <a href="https://github.com/MarieEtienne/coursml">
+    <span class="fa fa-github"></span>
+     
+    dépôt github
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-child"></span>
+     
+    Introduction à R
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="intror_presentation.html">Présentation du logiciel R</a>
+    </li>
+    <li>
+      <a href="intror_rstudio.html">Environnement RStudio</a>
+    </li>
+    <li>
+      <a href="intror_manip.html">Manipulation de données</a>
+    </li>
+    <li>
+      <a href="intror_visu.html">Visualisation</a>
+    </li>
+    <li>
+      <a href="intror_rappel.html">Rappels de statistique</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-adjust"></span>
+     
+    Echantillonnage
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="echant_variabilite.html">Statistique inférentielle, généralités</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-tilde"></span>
+     
+    Ajustement de modèles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ajust_modele.html">La modélisation</a>
+    </li>
+    <li>
+      <a href="ajust_vrais.html">Vraisemblance de modèles usuels</a>
+    </li>
+    <li>
+      <a href="ajust_estim.html">Estimation par maximum de vraisemblance</a>
+    </li>
+    <li>
+      <a href="ajust_tests.html">Intervalles de confiance et tests</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Variabilité d’échantillonnage</h1>
+
+</div>
+
+
+<div id="quattend-on-dun-bon-echantillonnage" class="section level1">
+<h1>Qu’attend on d’un bon échantillonnage ?</h1>
+</div>
+<div id="differentes-strategies-dechantillonnage" class="section level1">
+<h1>Différentes stratégies d’échantillonnage</h1>
+<div id="echantillonnage-aleatoire-simple-eas" class="section level2">
+<h2>Echantillonnage aléatoire simple (EAS)</h2>
+<div id="presentation" class="section level3">
+<h3>Présentation</h3>
+<p>Définition L’EAS consiste à prélever (sans remise) n éléments dans une population de taille N, au hasard et de façon indépendante. Chaque élément possède la même probabilité d’être échantillonné et chacun des échantillons possibles de taille n possède la même probabilité d’être constitué.</p>
+</div>
+<div id="exemple" class="section level3">
+<h3>Exemple</h3>
+<p>On s’intéresse aux captures dans une population de <span class="math inline">\(N=36\)</span> pêcheurs. On choisit au hasard 18 pêcheurs, soit un effort d’échantillonnage <span class="math inline">\(f=0.5\)</span>.</p>
+<p><a href="echant_exampleER.pdf">Echantillonnage Débarquement - cours E. Rivot</a></p>
+<p><a href="echant_schémaER.pdf">Méthodologie - cours E.Rivot</a></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">N &lt;-<span class="st"> </span><span class="dv">36</span>
+n &lt;-<span class="st"> </span><span class="dv">18</span>
+pecheur_echant &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>N, <span class="dt">size =</span> n, <span class="dt">replace =</span><span class="ot">FALSE</span>)</code></pre></div>
+</div>
+<div id="proprietes-de-lestimateur-de-la-moyenne" class="section level3">
+<h3>Propriétés de l’estimateur de la moyenne</h3>
+<p>Chaque individu a la même probabilité d’être dans l’échantillon. par exemple pour l’individu <span class="math inline">\(i=5\)</span>.</p>
+<p>Expliquer le code suivant :</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">i &lt;-<span class="st"> </span><span class="dv">5</span> 
+res &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">400</span>, i <span class="op">%in%</span><span class="st"> </span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>N, <span class="dt">size=</span> n, <span class="dt">replace =</span> <span class="ot">FALSE</span>))
+<span class="kw">sum</span>(res) <span class="op">/</span><span class="st"> </span><span class="kw">length</span>(res)</code></pre></div>
+<pre><code>## [1] 0.5225</code></pre>
+<p>L’estimateur de la moyenne est ${X}<em>n=</em>{i=1}^n{X_i}, $ et l’estimateur de la variance est <span class="math inline">\(S^2 =\frac{1}{n-1} \sum_{i=1}^n(X_i -\bar{X}_n)^2\)</span>.</p>
+<p>Alors <span class="math display">\[Var(\bar{X}_n)= (1-f) \frac{\hat{\sigma}^2}{n}\]</span></p>
+<p>La variance vient du fait qu’on n’échantillonne pas complètement la population.</p>
+<ul>
+<li>Que se passe t il si <span class="math inline">\(n\to N\)</span> ?</li>
+<li>Que peut-on dire de <span class="math inline">\(f\)</span> si la population est très grande ?</li>
+</ul>
+</div>
+<div id="proprietes-de-lestimateur-de-la-somme" class="section level3">
+<h3>Propriétés de l’estimateur de la somme</h3>
+<p>L’estimateur de la somme est ${X}<em>n^+= </em>{i=1}^n {X_i} = N {X}_n, $ Alors <span class="math display">\[Var({X}_n^+)= \frac{N^2}{n} (1-f) {\hat{\sigma}^2}\]</span></p>
+<ul>
+<li>Que se passe t il si <span class="math inline">\(n\to N\)</span> ?</li>
+</ul>
+</div>
+<div id="exemple-estimation-de-la-population-totale-de-poissons" class="section level3">
+<h3>Exemple : Estimation de la population totale de poissons</h3>
+<p>Sur une zone de 10 km<span class="math inline">\(^2\)</span>, 30 traits de chalut sont réalisés.</p>
+<p>Chacun balaie une surface de 20m x 5000m = 100 000 m<span class="math inline">\(^2\)</span> = 1/10 de km<span class="math inline">\(^2\)</span> soit 1/100 de la surface totale.</p>
+<ul>
+<li>Que vaut <span class="math inline">\(f\)</span> ? <!-- 30 traits de chalut réalisés = 3/10 de la surface totale balayée (f = 3/10 ; N = 100). --></li>
+<li>Estimer la population totale à partir de l’estimation de la population moyenne par traits de chalut ?</li>
+</ul>
+<p>Données : <span class="math inline">\(\bar{x} = 1000\)</span>,<span class="math inline">\(\hat{\sigma}^2 = 10000,\)</span></p>
+<!-- V̂ ( x ) = ( 1 − f ) ⋅ nb = 233 -->
+<!-- n -->
+<!-- Σ ˆ = N ⋅ x = 100 000 -->
+</div>
+<div id="optimisation-de-la-taille-de-lechantillon" class="section level3">
+<h3>Optimisation de la taille de l’échantillon</h3>
+<p>Il est souhaitable d’avoir une bonne précision mais pas à n’importe quel prix !! et l’échantillonnage coute cher !</p>
+<p>Si on veut une précision de 10<span class="math inline">\(\%\)</span> quelle taille d’echantillon faut-il choisir ?</p>
+<p>Le coefficient de variation est défini par <span class="math display">\[CV_{\bar{X}_n} =\frac{\sqrt{Var(\bar{X}_n)}}{E(\bar{X}_n)}\]</span> En déduire la valeur de <span class="math inline">\(n\)</span> minimale pour avoir un CV estimé de 10<span class="math inline">\(\%\)</span>.</p>
+</div>
+</div>
+<div id="exercice-sur-la-relation-age---taille" class="section level2">
+<h2>Exercice sur la relation age - taille</h2>
+<pre><code>##       age            length      sexe       site    
+##  Min.   : 1.00   Min.   :12.73   f:292   Site1:181  
+##  1st Qu.: 6.00   1st Qu.:22.72   m:208   Site2:319  
+##  Median :11.00   Median :26.51                      
+##  Mean   :13.78   Mean   :26.19                      
+##  3rd Qu.:20.00   3rd Qu.:29.68                      
+##  Max.   :40.00   Max.   :40.32</code></pre>
+<p><img src="echant_strategie_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Supposons que le jeu de données <code>large_growth_data</code> contient l’ensemble d’une population d’intérêt.</p>
+<p>Echantillonner avec <span class="math inline">\(f = 0.2\)</span> et estimer la taille moyenne.</p>
+<p>Repliquer cette opération plusieurs fois et représenter la loi de l’estimateur de la moyenne ainsi que la vraie valeur.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">load</span>(<span class="st">&#39;data/large_growthdataset.Rdata&#39;</span>)
+N &lt;-<span class="st"> </span><span class="kw">nrow</span>(large_growth_data)
+f &lt;-<span class="st"> </span><span class="fl">0.2</span>
+n &lt;-<span class="st"> </span><span class="kw">round</span>( f <span class="op">*</span><span class="st"> </span>N )
+
+L &lt;-<span class="st"> </span><span class="dv">100</span>
+
+estimates_EAS &lt;-<span class="kw">replicate</span>(L, {
+  echant &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">1</span> <span class="op">:</span><span class="st"> </span>N, <span class="dt">size =</span> n, <span class="dt">replace =</span> <span class="ot">FALSE</span>)
+  dplyr<span class="op">::</span><span class="kw">slice</span>(large_growth_data, echant) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(length) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">colMeans</span>()
+}) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">as.data.frame</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(<span class="dt">mean =</span> <span class="st">&#39;.&#39;</span>)
+
+
+<span class="kw">ggplot</span>(estimates_EAS, <span class="kw">aes</span>(<span class="dt">x=</span>mean)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_histogram</span>(<span class="dt">fill =</span> <span class="st">&#39;darkgreen&#39;</span>, <span class="dt">alpha =</span> <span class="fl">0.6</span>, <span class="dt">bins =</span> <span class="dv">10</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> <span class="kw">mean</span>(large_growth_data<span class="op">$</span>length)) <span class="op">+</span><span class="st"> </span><span class="kw">xlim</span>(<span class="kw">c</span>(<span class="dv">24</span>, <span class="dv">28</span>))</code></pre></div>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_bar).</code></pre>
+<p><img src="echant_strategie_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>La variance de l’estimateur calculé sur 100 réalisations vaut 0.507856.</p>
+<div id="interets-et-limites" class="section level3">
+<h3>Intérêts et limites</h3>
+<ul>
+<li>L’échantillonnage est simple (quoique ….)</li>
+<li><p>Les propriétés des estimateurs sont sympathiques</p></li>
+<li><p>peu efficace pour estimer des différences au sein d’une population,</p></li>
+</ul>
+</div>
+</div>
+<div id="echantillonnage-stratifie-es" class="section level2">
+<h2>Echantillonnage stratifié (ES)</h2>
+<div id="presentation-1" class="section level3">
+<h3>Présentation</h3>
+<p>L’échantillonnage stratifié à subdiviser une population hétérogène en sous populations ou « strates » plus homogènes, mutuellement exclusives et collectivement exhaustives.</p>
+<p>La population hétérogène de taille N est ainsi divisée en S strates (<span class="math inline">\(s = 1,\ldots, S\)</span>) plus homogènes d’effectif <span class="math inline">\(N_s\)</span> telles que <span class="math inline">\(N = \sum_{s=1}^{S}N_s\)</span>.</p>
+<p>Un échantillon est prélevé dans chacune des strates en appliquant un plan d’échantillonnage. La solution la plus simple et la plus classique est d’appliquer un EAS dans chaque strate (mais on peut appliquer un autre plan).</p>
+</div>
+<div id="exemple-1" class="section level3">
+<h3>Exemple</h3>
+<p><a href="echant_exampleER_2.pdf">Echantillonnage Débarquement - cours E. Rivot</a></p>
+</div>
+<div id="proprietes" class="section level3">
+<h3>Propriétes</h3>
+<p>La variance provient uniquement de l’échantillonnage intre strate, pas de variance d’estimation inter strate puisque toutes les strates sont vues !</p>
+<p>Plus efficace qu’un EAS</p>
+</div>
+<div id="example" class="section level3">
+<h3>Example</h3>
+<p>Re prendre le jeu de données <code>large_growth_data</code>et proposer un échantillonnage stratifié.</p>
+<p>Estimer la taille moyenne de la population.</p>
+<ul>
+<li>Réfléchir sur les strates pertinentes.</li>
+<li>Représenter la variabilité de l’estimateur.</li>
+</ul>
+<p>On peut choisir de stratifier par couple (sexe x site). On imagine connu les effectifs de chaque classe et on veut échantillonner avec un taux <span class="math inline">\(f_h=0.2\)</span> comme dans le cas de l’EAS.</p>
+<p>Le code qui suit propose une solution utilisant largement le potentiel du package <code>dplyr</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fh &lt;-<span class="st"> </span><span class="fl">0.2</span>
+
+strates &lt;-<span class="st"> </span>large_growth_data <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(sexe, site) <span class="op">%&gt;%</span><span class="st">  </span>
+<span class="st">  </span><span class="kw">summarise</span>(<span class="dt">no_rows =</span> <span class="kw">length</span>(length))</code></pre></div>
+<p>Il est possible de calculer els moyennes au sein de chaque strate et de les combiner dans une moyenne pondérée</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">estimated_pop_mean_<span class="dv">1</span> &lt;-<span class="st"> </span>large_growth_data <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(sexe, site) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">sample_frac</span>(<span class="dt">size =</span> fh) <span class="op">%&gt;%</span><span class="st">  </span><span class="co"># on groupe par sexe x site et on échantillonne</span>
+<span class="st">  </span><span class="kw">group_by</span>(sexe, site) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">estimated_means =</span> <span class="kw">mean</span>(length)) <span class="op">%&gt;%</span><span class="st">  </span><span class="co"># groupe par sexe x site et calcule de moyenne </span>
+<span class="st">  </span><span class="kw">inner_join</span>(strates) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># concatenation avec la table strate et on degroupe</span>
+<span class="st">  </span><span class="kw">summarise</span>( <span class="dt">p_mean =</span> <span class="kw">weighted.mean</span>(estimated_means, <span class="dt">w=</span>no_rows) ) <span class="co"># calcul de la moyenne pondérée</span></code></pre></div>
+<pre><code>## Joining, by = c(&quot;sexe&quot;, &quot;site&quot;)</code></pre>
+<p>Ou plus directement on calcule la moeyenne des individus échantillonnés</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">estimated_pop_mean_<span class="dv">2</span> &lt;-<span class="st"> </span>large_growth_data <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(sexe, site) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">sample_frac</span>(<span class="dt">size =</span> fh) <span class="op">%&gt;%</span><span class="st">  </span><span class="co"># on groupe par sexe x site et on échantillonne</span>
+<span class="st">  </span><span class="kw">group_by</span>(sexe, site) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">p_mean =</span> <span class="kw">mean</span>(length)) </code></pre></div>
+<p>Pour visualiser la distribution de l’échantillonnage</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">estimates_ES &lt;-<span class="st"> </span><span class="kw">data.frame</span>( <span class="dt">mean =</span> 
+                              <span class="kw">replicate</span>(L, {
+                                estimated_pop_mean_<span class="dv">1</span> &lt;-<span class="st"> </span>large_growth_data <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">                                  </span><span class="kw">group_by</span>(sexe, site) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">sample_frac</span>(<span class="dt">size =</span> fh)  <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">summarise</span>(<span class="dt">pmean =</span> <span class="kw">mean</span>(length)) <span class="op">%&gt;%</span><span class="st">  </span><span class="co"># groupe par sexe x site et calcule de moyenne </span>
+<span class="st">                                  </span><span class="kw">inner_join</span>(strates) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># concatenation avec la table strate et on degroupe</span>
+<span class="st">                                  </span>dplyr<span class="op">::</span><span class="kw">summarise</span>( <span class="dt">p_mean =</span> <span class="kw">weighted.mean</span>(pmean, <span class="dt">w=</span>no_rows) ) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># calcul de la moyenne pondérée</span>
+<span class="st">                                  </span><span class="kw">as.numeric</span>()
+                              }) ) 
+
+<span class="kw">ggplot</span>(estimates_ES, <span class="kw">aes</span>(<span class="dt">x=</span>mean)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_histogram</span>(<span class="dt">fill =</span> <span class="st">&#39;darkgreen&#39;</span>, <span class="dt">alpha =</span> <span class="fl">0.6</span>, <span class="dt">bins =</span> <span class="dv">10</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> <span class="kw">mean</span>(large_growth_data<span class="op">$</span>length))<span class="op">+</span><span class="st"> </span><span class="kw">xlim</span>(<span class="kw">c</span>(<span class="dv">24</span>, <span class="dv">28</span>))</code></pre></div>
+<p><img src="echant_strategie_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>La variance de l’estimateur calculé sur 100 réalisations vaut 0.4631236.</p>
+<p>Attention dans la réalité, on ne connait pas le poids de chaque strate.</p>
+<ul>
+<li>Que se passe t il si on se trompe dans le poids des strates ?</li>
+</ul>
+<p>On va sur échantillonner une strate. Cele ci sera donc sur représentée dans l’échantillon et l’estimateur ainsi construit sera biaisé.</p>
+<ul>
+<li>Comment avoir une idée du poids des strates ?</li>
+</ul>
+<p>On peut utiliser des données d’années précédentes, la littérature ou construire un EAS pour estimer le poids de chaque strate.</p>
+</div>
+<div id="interets-et-limites-1" class="section level3">
+<h3>Intérêts et limites</h3>
+<p>L’ES est d’autant plus intéressant que : - La variance inter-strates est grande (pas de var. inter-strates dans la variance d’estimation) ; - La variance intra-strate est réduite (seule source de variance d’estimation).</p>
+<p>A condition que les strates soient bien définies, en rapport avec la variable d’intérêt dans la population.</p>
+<p>l’ES fournit des estimateurs sans biais et procure un gain de précision important par rapport à l’EAS.</p>
+<p>Une erreur d’appréciation du poids des strates <span class="math inline">\(w_s\)</span> peut entraîner un biais important dans les estimateurs de la moyenne <span class="math inline">\(\mu\)</span> et du total <span class="math inline">\(\Sigma\)</span>.</p>
+</div>
+</div>
+</div>
+<div id="pour-aller-plus-loin" class="section level1">
+<h1>Pour aller plus loin</h1>
+<div id="a-lire" class="section level2">
+<h2>A lire</h2>
+<p><a href="files/Echantillonnage_poly_2017.pdf">Le polyciopié rédigé par Etienne Rivot</a></p>
+</div>
+<div id="a-rendre-pour-le-24-septembre-2018" class="section level2">
+<h2>A rendre pour le 24 septembre 2018</h2>
+<p>Le <a href="https://www.ccamlr.org/en/organisation/home-page">CCAMLR</a> est en charge entre autre du suivi des stocks de légine en Antarctique. De nombreuses sources de données sont utilisées mais une information clé repose sur la déterminaition d’une relation de von Bertalanffy entre age et longueur.</p>
+<p>Les individus jeunes sont plus nombreux dans la population mais l’ajustement de la courbe requiert aussi des observations sur des dinvidus plus âgés.</p>
+<p>Décrire le protocole d’écahntillonnage utilisé dans le papier de <a href="files/Candy%20et%20al%202007%20CCAMLR%20Science%2003%20Growth_devoirEchantillonnage.pdf">Candy, S.G., A.J. Constable, T. Lamb and R. Williams</a></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

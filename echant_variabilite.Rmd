@@ -1,0 +1,445 @@
+---
+title: "Statistique inférentielle : de l'échantillon à la population"
+output: 
+  html_document:
+   toc: true
+   toc_float: true
+   logo: LogoAgrocampusOuest.jpg
+   number_sections: false
+   highlight: tango
+   css: style.css
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, fig.width = 5, fig.height = 3)
+library(ggplot2) ## pour de beaux graphiques
+library(ggfortify) ## pour de beaux graphiques
+library(car) # pour les modèles linéaires
+library(gridExtra) # pour mettre plusieurs graphiques cote à cote
+suppressMessages(library(nlstools)) # pour la régression non linéaire
+```
+
+
+
+En statistique, un objectif classique consiste à inférer des propriétés sur une population à partir d'une vision partielle de celle-ci : un échantillon
+
+## Un exemple central
+
+Une population extra Terrestre réside sur la planète <i> Halieutik </i>. Cette population est inconnue des habitants de la planête <i> Statistik </i> mais très avancée technologiquement, les habitants d'Halieutik ont construit un vaisseau pour rendre visite à la planète Statistik. 
+Ce vaisseau ne contient que 10 individus.
+
+<center>
+![sample](img/Soucoupe.png){width=30%}
+</center>
+
+La population de Statistik ne connaît pas les motivations des habitants d'Halieutik et souhaite faire progresser sa connaissance de la morphologie sur cette nouvelle espèce (pour se préparer à toutes éventualités).
+
+A partir des 10 individus qui descendent du vaisseau que peut-on raisonnablement affirmer  sur la population générale d'Halieutik ?
+
+<center>
+![sample](img/sample1.png){width=30%}
+</center>
+
+C'est un problème de statistique
+
+## Plus généralement
+
+Contrairement à ce qu'on pourrait croire, c'est un  problème très classique en statistique dans tous les domaines d'applications :
+
+- Intentions de vote de la population à partir d'un échantillon de la population, 
+- Evaluation du rendement de la parcelle à partir de quelques prélévements,
+- Evaluation de la préférence des consommateurs à partir d'un panel,
+- Evaluation de la structure des tailles de captures à partir des débarquements 
+
+<center>
+![Debarquement criée, source E. Rivot](img/criee.jpg){width=50%}
+</center>
+
+## Formaliser le passage de l'échantillon à la population
+
+Il faut poser des hypothèses. Par exemple si l'on s'intéresse à la taille moyenne des habitatnts d'Halieutik. 
+
+On peut imaginer un modèle de la répartition des tailles dans la population. 
+
+```{r, echo = FALSE}
+mu <- 110
+s <- 10
+
+p1 <- ggplot(data = data.frame(height = rnorm(50000, mean = mu, sd = s)), aes(height)) +
+  geom_histogram(alpha = 0.5, aes(y =..density..), bins = 30 ) +
+  stat_function(fun = dnorm, n = 201, args = list(mean = mu, sd = s), col='darkred') + ylab("")  +
+  scale_y_continuous(breaks = NULL) + 
+  geom_vline(xintercept = mu, col = "darkgreen") +  
+    annotate("text",label = expression(mu), x = mu + 4, y =0.01, size = 8, colour = "darkgreen")
+
+suppressWarnings(print(p1))
+```
+
+
+
+
+Si on choisit complètement au hasard 10 individus dans cette population quelle est la situation la plus probable ?
+
+```{r, echo=FALSE}
+set.seed(10)
+n <- 10
+g1 <- p1 + geom_point(data = data.frame(x = rnorm(n, mean=mu, sd=s), y=rep(0, n)), aes(x=x,y=y), col="red")
+g2 <- p1 + geom_point(data = data.frame(x = rnorm(n, mean=mu+30, sd=s), y=rep(0, n)), aes(x=x,y=y), col="red")
+g3 <- p1 + geom_point(data = data.frame(x = rnorm(n, mean=mu, sd=2*s), y=rep(0, n)), aes(x=x,y=y), col="red")
+g4 <- p1 + geom_point(data = data.frame(x = rnorm(n, mean=mu -20, sd=4*s), y=rep(0, n)), aes(x=x,y=y), col="red")
+# Show the 4 plots on the same page
+suppressWarnings(
+  grid.arrange(g1, g2, g3, g4, ncol = 2, nrow = 2)
+)
+```
+
+Puisque la répartition des tailles au sein de la population suit une loi normale, la taille d'un individu choisi uniformément parmi tous les individus d'une grande population  suit également une loi normale. <i> L'aléa vient du choix de l'individu parmi tous les individus possibles. </i>
+
+## Estimateur versus Estimation
+
+En situation réelle, on peut contrôler (un peu, cf [strategie](echant_strategie.html) ) comment on choisit les individus au sein d'une population et à partir de notre échantillon on va chercher à construire de l'information sur $\mu$ le paramètre qui règle la moyenne de la population.
+
+Comment approcher $\mu$ ? 
+
+On peut construire un estimateur : une variable aléatoire qui essaie de s'appricher de la quantité inconnue $\mu$.
+
+$\mu$ désignant la moyenne de la population 
+on peut construire la variable aléatoire, appelée moyenne empirique  
+$$\bar{X} = \frac{1}{n} \sum_{k=1}^{n} X_k,$$
+où $X_k$ désigne la taille du k$^{\mbox{ème}}$ individu choisi au hasard (par conséquent la taille de cette individu est bien une variable aléatoire) et $n$désignant la taille de l'échantillon.
+
+```{r, echo=FALSE}
+set.seed(1)
+n_dataset <- 20
+write_file <- lapply(1:n_dataset, function(i){
+  df_sample <- data.frame(height = rnorm(n, mean=mu, sd=s))
+  save(df_sample, file = file.path('data', paste0('height_sample_', i, '.RData')))
+})
+```
+
+Une fois qu'on a effectivement sélectionné nos individus, la taille n'est plus aléatoire,  on a une réalisation de notre estimateur, c'est une estimation.
+
+Si on s'intéresse à la taille de notre population venant d'Halieutik, l'estimateur est la moyenne empirique et sa réalisation, i.e. l'estimation la moyenne de l'échantillon.
+
+
+
+`r n_dataset` vaisseaux sont arrivés sur Statistik, chacun contenant  `r n` individus dont on a mesuré la tailleéchantillons de taille provenant de la même population ont été relevés (`data/height_sample_i.Rdata`). 
+
+Construire  une estimation de la taille de la population pour chaque échantillon et représenter les `r n_dataset` obtenus sous forme d'histogramme. 
+
+Que constatez-vous ?
+
+```{r, echo = FALSE}
+estimation <- sapply(1:n_dataset, function(i){
+  df_sample <- read.csv(file = file.path('data', paste0('height_sample_', i, '.Rdata')))
+  mean(df_sample$height)
+})
+ggplot(data=data.frame(mu_hat = estimation), aes(x=mu_hat)) + geom_histogram(bins=round(sqrt(n_dataset))) 
+```
+
+Et avec davantage d'échantillons
+
+
+```{r, echo=FALSE}
+n_dataset <- 10000
+df_sample <- data.frame(height=sapply(1:n_dataset, function(i){mean(rnorm(n, mean = mu, sd=s)) }))
+ggplot(df_sample, aes(x = height)) + geom_histogram( bins = sqrt(n_dataset) ) + geom_vline(xintercept = mu, col='darkred')
+```
+
+Ainsi on montre que la loi de 
+$$\bar{X}_n \sim \mathcal{N}(\mu, \sigma^2/n)$$ 
+
+
+### Distribution des tailles dans la population 
+
+Que se passe t il si, au sein de la population la distribution des tailles ne suit pas une loi normale ?
+
+```{r}
+
+f1 <- function(x, df, mean){
+  mean + dt(x-mean, df = df)
+}
+p2 <- ggplot(data = data.frame(height = c(mu - 20 * s, mu + 20 * s)), aes(height))  +
+  stat_function(fun = dgamma, n = 201, args = list( shape = mu * 0.1, rate = 0.1)) + ylab("") + 
+  theme( axis.text.x=element_blank()) +
+  scale_y_continuous(breaks = NULL) + 
+  geom_vline(xintercept = mu, col = "darkgreen") 
+suppressWarnings(print(p2))
+```
+
+
+```{r}
+mu <- 110
+
+n <- 20
+n_dataset <- 10000
+sample_gamma <- sapply(1:n_dataset, function(s_){
+    rgamma(n, shape = mu * 0.1, rate = 0.1)
+}
+)
+## calcul la moyenne colonne par colonne
+x <- apply(sample_gamma, 2, mean)
+
+df1 <- data.frame(estim_mu = x)
+ggplot(data = df1, aes(x=estim_mu)) + geom_histogram(bins=sqrt(n_dataset))
+```
+
+
+
+Représenter graphiquement la loi de l'estimateur de la moyenne, pour des échantillons de taille 10 et de taille 100.
+
+
+
+## Effet du choix de l'échantillon
+Le vaisseau spatial est petit donc au lieu de choisir uniformément dans la population des habitants à envoyer on va privilégier les petits.
+
+```{r prefSampling, echo = TRUE}
+
+
+## fonction de selectivité
+selectivity <- function(x, a, b){
+  t_x <- exp(-a * (x - b))
+  return(t_x / (1 + t_x))
+}
+
+## les candidats choisis preferentiellement selon leur taille 
+## probabilité qu'un individe de taille x soit dans l'échantillon
+pref_height_sampling <- function(mean, sd, a, b){
+  iter_max <- 100
+  
+  x_prop <- rnorm(1, mean = mean, sd = sd)
+  keep   <- (runif(1) < selectivity(x_prop, a = a, b = b))
+  
+  iter <- 1
+  
+  while((!keep) & (iter <iter_max)){
+    iter  <- iter + 1
+    x_prop <- rnorm(1, mean = mean, sd = sd)
+    keep   <- (runif(1) < selectivity(x_prop, a = a, b = b))
+  }
+  if(iter >= iter_max){
+    cat("Nombre maximun d'itérations atteint")
+    return(NULL)
+  } else {
+    return(round(x_prop,2))
+  }
+}
+
+
+## echantillonner n individus
+pref_n_sample <- function(n , mean, sd, a , b){
+  round(
+    sapply(1:n, function(s_){
+    pref_height_sampling(mean = mean, sd = sd, a =  a, b = b) } ), 2)
+}
+
+
+## les tailles observées
+height <- pref_n_sample(n, mean = mu, sd = s, a = 0.5, b = mu + 10)
+mean(height)
+```
+
+Distribution de l'estimateur 
+
+```{r}
+n_dataset <- 10000
+n         <- 30
+height_10000_rep <- sapply(1:n_dataset, function(s_){
+  pref_n_sample(n, mean = mu, sd = s, a = 0.5, b = mu + 10)
+})
+
+dim(height_10000_rep)
+
+ggplot(data.frame(estim = apply(height_10000_rep, 2, mean)), aes(x = estim)) + geom_histogram(bins=sqrt(n_dataset)) + geom_vline(xintercept = mu, col = 'darkred')
+```
+
+
+L'estimateur est <i> biaisé</i>.
+
+On peut le débiaiser grâce à la théorie de l'échantillonnage et on apprendre à le faire dans le chapitre [strategie](echant_strategie.html)  pour certain type d'échantillonnage classique.  
+
+```{r, echo = FALSE}
+const_norm     <- 0.8266904
+prob_inclusion <- selectivity(height_10000_rep, a = 0.5, b = mu + 10)/const_norm
+#prob_inclusion <- sweep(prob_inclusion, colSums(prob_inclusion), MARGIN = 2, FUN = '/')  
+dframe <- data.frame(estim = apply(height_10000_rep/prob_inclusion, 2, mean)) 
+ggplot(dframe, aes(x = estim)) +
+  geom_histogram(bins = sqrt(n_dataset), alpha= 0.3 ) + geom_vline(xintercept = mu, col = 'darkred') + 
+  xlim(c(0,200)) +
+  geom_vline(xintercept = mean(dframe$estim), col='darkgreen')
+```
+
+Adapter les scripts précédents pour créer un échantillonnage préférentiel crédible pour un chalut et visualiser l'effet de ce type d'échantillonnage sur l'estimation de la taille moyenne.
+
+## Intervalle de confiance 
+
+Dans le cas d'un échantillonnage uniforme, au sein d'une grande population, il est raisonnable de supposer que l'estimateur de la moyenne suit la loi suivante:
+$$X_n =\frac{1}{n} \sum_{k=1}^{n} X_i \sim \mathcal{N}(\mu,\sigma^2/n).$$
+
+Graphiquement, on peut représenter les différentes quiantités de la manière suivante
+```{r, echo = FALSE}
+mu <- 110
+s <- 10
+n <- 10
+
+p1 <- ggplot(data = data.frame(height = rnorm(50000, mean = mu, sd = s)), aes(height)) +
+  geom_histogram(alpha = 0.5, aes(y = ..density..), bins = 30, fill = "darkred", col = "darkred"  ) +
+  stat_function(fun = dnorm, n = 201, args = list(mean = mu, sd = s), col='darkred') + ylab("") + 
+  theme( axis.text.x = element_blank()) +
+  scale_y_continuous(breaks = NULL) + 
+  geom_vline(xintercept = mu, col = "darkred") +  
+  geom_histogram(data=data.frame(xbar = rnorm(10000, mean = mu, sd = s /sqrt(n))), aes(x = xbar, y = ..density..), alpha= 0.2, col='darkgreen', fill="darkgreen",linetype="dashed") + 
+  stat_function(fun = dnorm, n = 201, args = list(mean = mu, sd = s/sqrt(n)), col = 'darkgreen') 
+suppressWarnings(print(p1))
+```
+
+La distribution de l'estimateur est représenté en vert, la distribution des valeurs dans la population est représentée en rouge.
+
+Dans une situation réelle, on n'a pas accès à la population, en fait tout ce qu'on peut espérer avoir est résumé dans le graphique suivant
+
+```{r, echo = FALSE}
+mu <- 110
+s <- 10
+n <- 10
+
+sample_df <- data.frame(height = rnorm(n, mean = mu, sd = s), y=rep(0,n))
+p_sample <- ggplot(data = sample_df, aes(x=height, y=y)) +
+  geom_point(alpha = 0.5, fill = "darkblue", col = "darkblue"  ) + 
+  geom_vline(xintercept = mean(sample_df$height), col='darkblue') + ylim(c(0, dnorm(mu, mean=mu, sd=s/sqrt(n))))
+```
+
+et on veut en déduire des informations sur la population (en rouge) grâce à la distribution de l'estimateur (en vert).
+
+Comment s'y prendre ?
+
+- Grâce à l'échantillon on peut estimuer $mu$ par $\bar{x}_n$.
+- Grâce à l'échantillon on peut estimuer $\sigma$ par $\hat{\sigma}=\sqrt{\frac{1}{n-1} \sum_{k=1}^n (x_k-} \bar{x}_n)^2$.
+- On a montré que $\bar{X}_n \sim\mathcal{N}(0,\sigma^2/n)$, mais on ne connaît pas exactement $\sigma$. On peut construire la quantité $T=\frac{\bar{X}_n-\bar{x}_n}{ /\hat{\sigma}}$. Cette quantité ne pédent ni de $\mu$ ni de $\sigma$ et on peut montrer que 
+$$ T=\frac{\bar{X}_n-\mu}{ \hat{\sigma}/\sqrt{n}} \sim \mathcal{T}(n-1)$$
+
+On en déduit la relation suivante
+
+$$ P \left\lbrace \mu \in [-t_{n-1, 1-\alpha/2}\frac{\hat{\sigma}}{\sqrt{n}} + \bar{X}_n, \ t_{n-1, 1-\alpha/2}\frac{\hat{\sigma}}{\sqrt{n}} + \bar{X}_n   ]\right\rbrace = 1-\alpha$$
+On va donc affirmer que $\mu$ est dans l'intervalle $[-t_{n-1, 1-\alpha/2}\frac{\hat{\sigma}}{\sqrt{n}} + \bar{x}_n, \ t_{n-1, 1-\alpha/2}\frac{\hat{\sigma}}{\sqrt{n}} + \bar{x}_n   ],$
+avec un risque de se tromper de $\alpha$
+
+On peut visualiser cette idée
+```{r}
+n  <- 10
+n_dataset <- 50
+alpha <- 0.05
+
+Intervalle <- function(sample){
+  n <- length(sample)
+  x_bar <- mean(sample)
+  tn_1 <- qt(p = 1-alpha/2, df = n-1)
+  sigma_hat  <- sd(sample)
+  c(x_bar, tn_1* sigma_hat/sqrt(n), sigma_hat)
+} 
+
+int_whole <- data.frame(t(sapply(1:n_dataset, function(s_){
+  sample <- rnorm(n, mean = mu, sd = s)
+  Intervalle(sample)
+})))
+
+colnames(int_whole) <- c('x_bar', 'width', 'sigma_hat')
+int_whole$y  <- seq(0, 0.2, length.out = n_dataset)
+
+
+ggplot(data = int_whole) + geom_errorbarh( aes( y = y,  xmin = x_bar - width, xmax = x_bar + width, height = 0)) + geom_vline(xintercept = mu, col='darkred')
+```
+
+## Les aliens sont ils plus petits que les humains ?
+
+
+On se demande si il est vrai que les humains ont une taille différente des aliens. 
+
+On veut tester l'hypothèse 
+$$H_{0} =\left\lbrace \mbox{Les humains sont  plus petits que les aliens}\right\rbrace$$
+$$H_{1} =\left\lbrace \mbox{Les humains sont strictement plus grands que les aliens}\right\rbrace$$
+
+Discuter du choix de $H_0$ et $H_1$. (On veut suffisamment d'élémnts qui indiquent la culpabilité, à défaut on ne peut pas rejeter l'hypothèse de l'innocence).
+
+
+Modélisation :
+\begin{itemize}
+\item $Y_{1k}$ taille du $k^{\mbox{ème}}$ alien, $k=1,\ldots n_a$, 
+\item $Y_{2k}$ taille du $k^{\mbox{ème}}$ humain $k=1,\ldots n_h$. 
+\end{itemize}
+On suppose que 
+$$Y_{ik} \overset{i.i.d}{\sim}\mathcal{N}(\mu_i, \sigma^2)$$ 
+
+
+On définit $Y_{i\bullet}=\frac{1}{n_i}\sum_{k=1}^{n_i} Y_{ik},$
+
+et $S^2= \frac{1}{n-2}\sum_{i=1}^2 \sum_{k=1}^{n_i} (Y_{ik}-Y_{i\bullet})^2$
+
+Alors, sous $H_0$,   quelle est la loi de ?
+$$T = \sqrt{n_1+n_2}\frac{Y_{1\bullet}-Y_{2\bullet}}{S}$$ 
+
+Si on ne sait pas, on va se convaincre que ça ne dépend ni de $\sigma^2,$ ni de $\mu_1$ ou $\mu_2$ ni de $n_1$ ou $n_2$ (mais de la somme $n_1+n_2$).
+
+Approche par simulations :
+
+On se fixe $\mu_1=\mu_2=110, $ et $\sigma=10$, $n_1= 10, n_2=15$
+
+On peut simuler un échantillon
+```{r}
+mu1   <- mu2 <- 110
+sigma <- 10 
+n_1   <- 10
+n_2   <- 15
+
+
+sim_tstat <- function(mu1, mu2, sigma, n1, n2){ 
+  Y1k <- rnorm(n_1, mean = mu1, sd = sigma)
+  Y2k <- rnorm(n_2, mean = mu2, sd = sigma)
+  
+  Y1point <-  mean(Y1k)
+  Y2point <-  mean(Y2k)
+  
+  S2 <-  ( sum ((Y1k - Y1point)^2 ) + sum ( (Y2k - Y2point)^2 ) ) / (n1 + n2 - 2)
+  S <- sqrt(S2)
+  
+  Tstat <- sqrt(n1+n2)*(Y1point - Y2point) / S
+  
+  return(Tstat)
+}
+
+sim_tstat(mu1, mu2, sigma, 10, 15)
+
+
+n_sim <- 100
+df <- data.frame(tstat = replicate(n_sim, sim_tstat(mu1, mu2, sigma, 10, 15)), scenario = rep('S1', n_sim))
+
+ggplot(df, aes(x=tstat, fill = scenario)) + geom_histogram(bins = sqrt(n_sim))
+
+```
+
+
+
+# La statistique inférentielle - résumé 
+
+Ce qu'on vient de voir sur l'exemple de la moyenne de la population est l'exemple de base de la statistique inférentielle. Plus généralement, on s'intéresse à une quantité spécifique d'une population donnée. On n'a jamais accès à cette quantitté mais on peut en avoir une idée grâce à une sous partie de la population, un échantillon.
+
+A partir de cette échantillon, on peut construire une quantité qui va approcher la quantité d'intéêt dans la population. La façon de construire cette quantité repose sur la théorie de l'estimation que l'on verra dans le chapitre [Estimation par maximum de vraisemblance](ajust_estim.html).
+
+## Loi d'un estimateur
+
+Un estimateur est une variable aléatoire. La loi de cette variable aléatoire repose sur des hyypothèses portant sur l'échantillonnage et sur la distribution de la quantité d'intérêt dans la population. Elle permet de construire des intervalles de confiance et des tests.
+
+Une réalisation de l'estimateur est une estimation. C'est la valeur que prend l'estimateur dans l'échantillon observé.
+
+
+## Intervalles de confiance
+
+A partir des estimation et des hypothèses de distribution on peut construire un intervalle de confiance pour la quantité d'intérêt. C'set un intervalle pour lequel on peut affirmer qu'il contient la valeur de la quantité d'intérêt avec un risque de se tromper contrôlé.
+
+
+## Les tests statistiques
+
+Grâce à la loi de l'estimteur on peut construire des tests statistiques qui vont permettre de tester des hypothèses sur la quantité d'intérêt. Est ce que la quantité d'intérêt est inférieur  ou égale à une certaine valeur par exemple. 
+
+La mise en oeuvre du test permet de réfuter (ou non) l'hypothèse, avec un risque de réfuter à tort qui est controlé.
+

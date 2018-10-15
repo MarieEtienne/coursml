@@ -1,0 +1,47 @@
+name: "Statistique pour l'halieutique"
+output_dir: "docs"
+navbar:
+  logo:
+  title: "Modèle linéaire pour l'écologie"
+  left:
+  - text: "Organisation"
+    href: index.html
+  - text: "dépôt github"
+    icon: fa-github
+    href: https://github.com/MarieEtienne/coursml
+  right:
+  - text: "Introduction à R"
+    icon: fa-child
+    menu:
+      - text: "Présentation du logiciel R"
+        href: intror_presentation.html
+      - text: "Environnement RStudio"
+        href: intror_rstudio.html
+      - text: "Manipulation de données"
+        href: intror_manip.html
+      - text: "Visualisation"
+        href: intror_visu.html
+      - text: "Rappels de statistique"
+        href: intror_rappel.html
+  - text: "Echantillonnage"
+    href: echant.html
+    icon: fa-adjust
+    menu:
+      - text: "Statistique inférentielle, généralités"
+        href: echant_variabilite.html
+  - text: "Ajustement de modèles"
+    icon: fa-tilde
+    menu:
+      - text: "La modélisation"
+        href: ajust_modele.html
+      - text: "Vraisemblance de modèles usuels"
+        href: ajust_vrais.html
+      - text: "Estimation par maximum de vraisemblance"
+        href: ajust_estim.html
+      - text: "Intervalles de confiance et tests"
+        href: ajust_tests.html
+    
+output:
+  html_document:
+    theme: lumen
+    highlight: haddock
