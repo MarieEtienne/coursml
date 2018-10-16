@@ -364,22 +364,13 @@ div.tocify {
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     <span class="fa fa-tilde"></span>
      
-    Ajustement de modèles
+    Modèle linéaire
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="ajust_modele.html">La modélisation</a>
-    </li>
-    <li>
-      <a href="ajust_vrais.html">Vraisemblance de modèles usuels</a>
-    </li>
-    <li>
-      <a href="ajust_estim.html">Estimation par maximum de vraisemblance</a>
-    </li>
-    <li>
-      <a href="ajust_tests.html">Intervalles de confiance et tests</a>
+      <a href="anova2.html">Anova</a>
     </li>
   </ul>
 </li>
@@ -600,8 +591,8 @@ Modélisation :
 <p>On peut simuler un échantillon</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mu1   &lt;-<span class="st"> </span>mu2 &lt;-<span class="st"> </span><span class="dv">110</span>
 sigma &lt;-<span class="st"> </span><span class="dv">10</span> 
-n_<span class="dv">1</span>   &lt;-<span class="st"> </span><span class="dv">10</span>
-n_<span class="dv">2</span>   &lt;-<span class="st"> </span><span class="dv">15</span>
+n_<span class="dv">1</span>   &lt;-<span class="st"> </span><span class="dv">15</span>
+n_<span class="dv">2</span>   &lt;-<span class="st"> </span><span class="dv">10</span>
 
 
 sim_tstat &lt;-<span class="st"> </span><span class="cf">function</span>(mu1, mu2, sigma, n1, n2){ 
@@ -611,21 +602,33 @@ sim_tstat &lt;-<span class="st"> </span><span class="cf">function</span>(mu1, mu
   Y1point &lt;-<span class="st">  </span><span class="kw">mean</span>(Y1k)
   Y2point &lt;-<span class="st">  </span><span class="kw">mean</span>(Y2k)
   
-  S2 &lt;-<span class="st">  </span>( <span class="kw">sum</span> ((Y1k <span class="op">-</span><span class="st"> </span>Y1point)<span class="op">^</span><span class="dv">2</span> ) <span class="op">+</span><span class="st"> </span><span class="kw">sum</span> ( (Y2k <span class="op">-</span><span class="st"> </span>Y2point)<span class="op">^</span><span class="dv">2</span> ) ) <span class="op">/</span><span class="st"> </span>(n1 <span class="op">+</span><span class="st"> </span>n2 <span class="op">-</span><span class="st"> </span><span class="dv">2</span>)
+  S2 &lt;-<span class="st">  </span>( <span class="kw">sum</span> ((Y1k <span class="op">-</span><span class="st"> </span>Y1point)<span class="op">^</span><span class="dv">2</span> ) <span class="op">+</span><span class="st"> </span><span class="kw">sum</span> ( (Y2k <span class="op">-</span><span class="st"> </span>Y2point)<span class="op">^</span><span class="dv">2</span> ) ) <span class="op">/</span><span class="st"> </span>(n_<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>n_<span class="dv">2</span> <span class="op">-</span><span class="st"> </span><span class="dv">2</span>)
   S &lt;-<span class="st"> </span><span class="kw">sqrt</span>(S2)
   
-  Tstat &lt;-<span class="st"> </span><span class="kw">sqrt</span>(n1<span class="op">+</span>n2)<span class="op">*</span>(Y1point <span class="op">-</span><span class="st"> </span>Y2point) <span class="op">/</span><span class="st"> </span>S
+  Tstat &lt;-<span class="st"> </span>(Y1point <span class="op">-</span><span class="st"> </span>Y2point) <span class="op">/</span><span class="st"> </span>( S <span class="op">*</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">1</span> <span class="op">/</span><span class="st"> </span>n_<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="dv">1</span> <span class="op">/</span><span class="st"> </span>n_<span class="dv">2</span>))
   
   <span class="kw">return</span>(Tstat)
 }
 
 <span class="kw">sim_tstat</span>(mu1, mu2, sigma, <span class="dv">10</span>, <span class="dv">15</span>)</code></pre></div>
-<pre><code>## [1] 0.3163333</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">n_sim &lt;-<span class="st"> </span><span class="dv">100</span>
-df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">tstat =</span> <span class="kw">replicate</span>(n_sim, <span class="kw">sim_tstat</span>(mu1, mu2, sigma, <span class="dv">10</span>, <span class="dv">15</span>)), <span class="dt">scenario =</span> <span class="kw">rep</span>(<span class="st">&#39;S1&#39;</span>, n_sim))
+<pre><code>## [1] -0.04195383</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">n_sim &lt;-<span class="st"> </span><span class="dv">500</span>
 
-<span class="kw">ggplot</span>(df, <span class="kw">aes</span>(<span class="dt">x=</span>tstat, <span class="dt">fill =</span> scenario)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_histogram</span>(<span class="dt">bins =</span> <span class="kw">sqrt</span>(n_sim))</code></pre></div>
+
+mu1 &lt;-<span class="st"> </span>mu2 &lt;-<span class="st"> </span><span class="dv">100</span>
+df1 &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">tstat =</span> <span class="kw">replicate</span>(n_sim, <span class="kw">sim_tstat</span>(mu1, mu2, sigma, <span class="dv">10</span>, <span class="dv">15</span>)), <span class="dt">scenario =</span> <span class="kw">rep</span>(<span class="st">&#39;S1&#39;</span>, n_sim)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">as_tibble</span>()
+
+<span class="kw">ggplot</span>(df1, <span class="kw">aes</span>(<span class="dt">x=</span>tstat, <span class="dt">fill =</span> scenario)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_histogram</span>(<span class="dt">bins =</span> <span class="kw">sqrt</span>(n_sim))</code></pre></div>
 <p><img src="echant_variabilite_files/figure-html/unnamed-chunk-13-1.png" width="480" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mu1 &lt;-<span class="st"> </span>mu2 &lt;-<span class="st"> </span><span class="dv">180</span>
+df2 &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">tstat =</span> <span class="kw">replicate</span>(n_sim, <span class="kw">sim_tstat</span>(mu1, mu2, sigma, <span class="dv">10</span>, <span class="dv">15</span>)), <span class="dt">scenario =</span> <span class="kw">rep</span>(<span class="st">&#39;S2&#39;</span>, n_sim)) 
+<span class="kw">ggplot</span>(df2, <span class="kw">aes</span>(<span class="dt">x=</span>tstat, <span class="dt">fill =</span> scenario)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_histogram</span>(<span class="dt">bins =</span> <span class="kw">sqrt</span>(n_sim))</code></pre></div>
+<p><img src="echant_variabilite_files/figure-html/unnamed-chunk-13-2.png" width="480" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st">  </span><span class="kw">bind_rows</span>(df1, df2)
+<span class="kw">ggplot</span>(df1, <span class="kw">aes</span>(<span class="dt">x=</span>tstat), <span class="dt">fill =</span> <span class="st">&#39;red&#39;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">geom_histogram</span>( ) <span class="op">+</span><span class="st"> </span><span class="kw">geom_histogram</span>(<span class="dt">data=</span>df2, <span class="kw">aes</span>(<span class="dt">x=</span>tstat), <span class="dt">fill =</span> <span class="st">&#39;blue&#39;</span>)</code></pre></div>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="echant_variabilite_files/figure-html/unnamed-chunk-13-3.png" width="480" /></p>
 </div>
 <div id="la-statistique-inferentielle---resume" class="section level1">
 <h1>La statistique inférentielle - résumé</h1>

@@ -29,18 +29,12 @@ navbar:
     menu:
       - text: "Statistique inférentielle, généralités"
         href: echant_variabilite.html
-  - text: "Ajustement de modèles"
+  - text: "Modèle linéaire"
     icon: fa-tilde
     menu:
-      - text: "La modélisation"
-        href: ajust_modele.html
-      - text: "Vraisemblance de modèles usuels"
-        href: ajust_vrais.html
-      - text: "Estimation par maximum de vraisemblance"
-        href: ajust_estim.html
-      - text: "Intervalles de confiance et tests"
-        href: ajust_tests.html
-    
+      - text: "Anova"
+        href: anova2.html
+
 output:
   html_document:
     theme: lumen

@@ -388,8 +388,8 @@ On peut simuler un échantillon
 ```{r}
 mu1   <- mu2 <- 110
 sigma <- 10 
-n_1   <- 10
-n_2   <- 15
+n_1   <- 15
+n_2   <- 10
 
 
 sim_tstat <- function(mu1, mu2, sigma, n1, n2){ 
@@ -399,10 +399,10 @@ sim_tstat <- function(mu1, mu2, sigma, n1, n2){
   Y1point <-  mean(Y1k)
   Y2point <-  mean(Y2k)
   
-  S2 <-  ( sum ((Y1k - Y1point)^2 ) + sum ( (Y2k - Y2point)^2 ) ) / (n1 + n2 - 2)
+  S2 <-  ( sum ((Y1k - Y1point)^2 ) + sum ( (Y2k - Y2point)^2 ) ) / (n_1 + n_2 - 2)
   S <- sqrt(S2)
   
-  Tstat <- sqrt(n1+n2)*(Y1point - Y2point) / S
+  Tstat <- (Y1point - Y2point) / ( S * sqrt(1 / n_1 + 1 / n_2))
   
   return(Tstat)
 }
@@ -410,11 +410,22 @@ sim_tstat <- function(mu1, mu2, sigma, n1, n2){
 sim_tstat(mu1, mu2, sigma, 10, 15)
 
 
-n_sim <- 100
-df <- data.frame(tstat = replicate(n_sim, sim_tstat(mu1, mu2, sigma, 10, 15)), scenario = rep('S1', n_sim))
+n_sim <- 500
 
-ggplot(df, aes(x=tstat, fill = scenario)) + geom_histogram(bins = sqrt(n_sim))
 
+mu1 <- mu2 <- 100
+df1 <- tibble(tstat = replicate(n_sim, sim_tstat(mu1, mu2, sigma, 10, 15)), scenario = rep('S1', n_sim)) %>% as_tibble()
+
+ggplot(df1, aes(x=tstat, fill = scenario)) + geom_histogram(bins = sqrt(n_sim))
+
+mu1 <- mu2 <- 180
+df2 <- tibble(tstat = replicate(n_sim, sim_tstat(mu1, mu2, sigma, 10, 15)), scenario = rep('S2', n_sim)) 
+ggplot(df2, aes(x=tstat, fill = scenario)) + geom_histogram(bins = sqrt(n_sim))
+
+
+
+df <-  bind_rows(df1, df2)
+ggplot(df1, aes(x=tstat), fill = 'red') + geom_histogram( ) + geom_histogram(data=df2, aes(x=tstat), fill = 'blue')
 ```
 
 

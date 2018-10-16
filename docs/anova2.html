@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Analyse de la variance à 2 facteurs</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/lumen.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/font-awesome-5.0.13/css/fa-svg-with-js.css" rel="stylesheet" />
+<script src="site_libs/font-awesome-5.0.13/js/fontawesome-all.min.js"></script>
+<script src="site_libs/font-awesome-5.0.13/js/fa-v4-shims.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 54px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+
+.section h2 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h3 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h4 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h5 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h6 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Modèle linéaire pour l'écologie</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Organisation</a>
+</li>
+<li>
+  <a href="https://github.com/MarieEtienne/coursml">
+    <span class="fa fa-github"></span>
+     
+    dépôt github
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-child"></span>
+     
+    Introduction à R
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="intror_presentation.html">Présentation du logiciel R</a>
+    </li>
+    <li>
+      <a href="intror_rstudio.html">Environnement RStudio</a>
+    </li>
+    <li>
+      <a href="intror_manip.html">Manipulation de données</a>
+    </li>
+    <li>
+      <a href="intror_visu.html">Visualisation</a>
+    </li>
+    <li>
+      <a href="intror_rappel.html">Rappels de statistique</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-adjust"></span>
+     
+    Echantillonnage
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="echant_variabilite.html">Statistique inférentielle, généralités</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-tilde"></span>
+     
+    Modèle linéaire
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="anova2.html">Anova</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Analyse de la variance à 2 facteurs</h1>
+
+</div>
+
+
+<div id="presentation" class="section level1">
+<h1>Présentation</h1>
+<p>On a enregistré pour 40 personnes, leur fréquence cardiaque au repos. On a noté pour chacune d’entre elles un niveau d’activité physique moyen ainsi que leur sexe. La variable sport varie de 1, très sportif, à 5 très sédentaire.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">freq &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;data/FreqCardiaqueEq.txt&quot;</span>, <span class="dt">skip=</span><span class="dv">1</span>, <span class="dt">header=</span>T, <span class="dt">sep=</span><span class="st">&quot; &quot;</span>) 
+<span class="kw">summary</span>(freq)</code></pre></div>
+<pre><code>##      freqC           Sport   Sexe  
+##  Min.   :76.00   Min.   :1   F:20  
+##  1st Qu.:81.75   1st Qu.:2   M:20  
+##  Median :84.00   Median :3         
+##  Mean   :84.45   Mean   :3         
+##  3rd Qu.:87.00   3rd Qu.:4         
+##  Max.   :93.00   Max.   :5</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">##Attention age numerique si pas de precision
+
+freq &lt;-<span class="st"> </span>freq <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">Sport_fac =</span> <span class="kw">as.factor</span>(Sport))
+<span class="kw">summary</span>(freq)</code></pre></div>
+<pre><code>##      freqC           Sport   Sexe   Sport_fac
+##  Min.   :76.00   Min.   :1   F:20   1:8      
+##  1st Qu.:81.75   1st Qu.:2   M:20   2:8      
+##  Median :84.00   Median :3          3:8      
+##  Mean   :84.45   Mean   :3          4:8      
+##  3rd Qu.:87.00   3rd Qu.:4          5:8      
+##  Max.   :93.00   Max.   :5</code></pre>
+</div>
+<div id="etude-descriptive-des-donnees" class="section level1">
+<h1>Etude descriptive des données</h1>
+<p>Plan d’expérience :</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">with</span>( freq,
+      <span class="kw">table</span>(Sexe, Sport)
+      )</code></pre></div>
+<pre><code>##     Sport
+## Sexe 1 2 3 4 5
+##    F 4 4 4 4 4
+##    M 4 4 4 4 4</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># ou en mode tidy</span>
+freq <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">count</span>(Sexe, Sport)</code></pre></div>
+<pre><code>## # A tibble: 10 x 3
+##    Sexe  Sport     n
+##    &lt;fct&gt; &lt;int&gt; &lt;int&gt;
+##  1 F         1     4
+##  2 F         2     4
+##  3 F         3     4
+##  4 F         4     4
+##  5 F         5     4
+##  6 M         1     4
+##  7 M         2     4
+##  8 M         3     4
+##  9 M         4     4
+## 10 M         5     4</code></pre>
+<p>Moyennes et écart-types par groupes :</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">freq <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(Sexe) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">mean_freq =</span> <span class="kw">mean</span>(freqC))</code></pre></div>
+<pre><code>## # A tibble: 2 x 2
+##   Sexe  mean_freq
+##   &lt;fct&gt;     &lt;dbl&gt;
+## 1 F          84.3
+## 2 M          84.6</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">freq <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(Sport) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">mean_freq =</span> <span class="kw">mean</span>(freqC))</code></pre></div>
+<pre><code>## # A tibble: 5 x 2
+##   Sport mean_freq
+##   &lt;int&gt;     &lt;dbl&gt;
+## 1     1      80.1
+## 2     2      81.8
+## 3     3      84.8
+## 4     4      85.5
+## 5     5      90.1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">freq <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(Sexe, Sport) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">mean_freq =</span> <span class="kw">mean</span>(freqC))</code></pre></div>
+<pre><code>## # A tibble: 10 x 3
+## # Groups:   Sexe [?]
+##    Sexe  Sport mean_freq
+##    &lt;fct&gt; &lt;int&gt;     &lt;dbl&gt;
+##  1 F         1      81  
+##  2 F         2      82.5
+##  3 F         3      82.5
+##  4 F         4      85.8
+##  5 F         5      89.8
+##  6 M         1      79.2
+##  7 M         2      81  
+##  8 M         3      87  
+##  9 M         4      85.2
+## 10 M         5      90.5</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(freq, <span class="kw">aes</span>(<span class="dt">y=</span>freqC, <span class="dt">x =</span> Sport_fac)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_boxplot</span>()
+  
+p2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(freq, <span class="kw">aes</span>(<span class="dt">y=</span>freqC, <span class="dt">x =</span> Sexe)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_boxplot</span>()
+
+<span class="kw">ggarrange</span>(p1,p2<span class="op">+</span><span class="kw">rremove</span>(<span class="st">&#39;ylab&#39;</span>))</code></pre></div>
+<p><img src="anova2_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">freq <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> Sport_fac, <span class="dt">color =</span> Sexe, <span class="dt">group =</span> Sexe, <span class="dt">y =</span> freqC) <span class="op">+</span>
+<span class="st">  </span><span class="kw">stat_summary</span>(<span class="dt">fun.y =</span> mean, <span class="dt">geom =</span> <span class="st">&quot;point&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">stat_summary</span>(<span class="dt">fun.y =</span> mean, <span class="dt">geom =</span> <span class="st">&quot;line&quot;</span>)</code></pre></div>
+<p><img src="anova2_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
+</div>
+<div id="anova-deux-facteurs-plan-equilibre" class="section level1">
+<h1>Anova deux facteurs, plan équilibré</h1>
+<p>Question : ``Y a-t-il un effet de la pratique sportive ou du sexe sur la frequence cardiaque au repos ?’’</p>
+<p>Modèle avec interaction :</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> lmInt &lt;-<span class="st"> </span><span class="kw">lm</span>(freqC<span class="op">~</span>Sexe<span class="op">+</span>Sport<span class="op">+</span>Sexe<span class="op">*</span>Sport, <span class="dt">data=</span>freq)
+ <span class="kw">summary</span>(lmInt)</code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = freqC ~ Sexe + Sport + Sexe * Sport, data = freq)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -3.300 -1.319 -0.325  1.600  4.550 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  78.0750     1.0936  71.395  &lt; 2e-16 ***
+## SexeM        -1.5000     1.5465  -0.970    0.339    
+## Sport         2.0750     0.3297   6.293 2.82e-07 ***
+## SexeM:Sport   0.6000     0.4663   1.287    0.206    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 2.085 on 36 degrees of freedom
+## Multiple R-squared:  0.7458, Adjusted R-squared:  0.7246 
+## F-statistic: 35.21 on 3 and 36 DF,  p-value: 8.35e-11</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> lmInt &lt;-<span class="st"> </span><span class="kw">lm</span>(freqC<span class="op">~</span>Sexe<span class="op">+</span>Sport_fac<span class="op">+</span>Sexe<span class="op">*</span>Sport_fac, <span class="dt">data=</span>freq)
+ <span class="kw">summary</span>(lmInt)</code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = freqC ~ Sexe + Sport_fac + Sexe * Sport_fac, data = freq)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+##  -3.25  -1.00   0.00   1.00   3.75 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)       81.0000     0.8563  94.588  &lt; 2e-16 ***
+## SexeM             -1.7500     1.2111  -1.445 0.158819    
+## Sport_fac2         1.5000     1.2111   1.239 0.225104    
+## Sport_fac3         1.5000     1.2111   1.239 0.225104    
+## Sport_fac4         4.7500     1.2111   3.922 0.000473 ***
+## Sport_fac5         8.7500     1.2111   7.225 4.84e-08 ***
+## SexeM:Sport_fac2   0.2500     1.7127   0.146 0.884923    
+## SexeM:Sport_fac3   6.2500     1.7127   3.649 0.000991 ***
+## SexeM:Sport_fac4   1.2500     1.7127   0.730 0.471147    
+## SexeM:Sport_fac5   2.5000     1.7127   1.460 0.154770    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.713 on 30 degrees of freedom
+## Multiple R-squared:  0.8571, Adjusted R-squared:  0.8143 
+## F-statistic:    20 on 9 and 30 DF,  p-value: 2.327e-10</code></pre>
+<p>Question : <code>Y a-t-il un effet de la pratique sportive  sur la fréquence cardiaque au repos ?'' \\ Question :</code>Y a-t-il un effet du sexe sur la fréquence cardiaque au repos ?’’</p>
+<p>Question : ``Y a-t-il un effet du sexe en interaction avec la pratique sportive sur la fréquence cardiaque au repos ?’’</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">anova</span>(lmInt)</code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Response: freqC
+##                Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## Sexe            1   0.90   0.900  0.3068  0.583745    
+## Sport_fac       4 475.15 118.788 40.4957 1.105e-11 ***
+## Sexe:Sport_fac  4  51.85  12.963  4.4190  0.006299 ** 
+## Residuals      30  88.00   2.933                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">Anova</span>(lmInt, <span class="dt">type=</span><span class="st">&quot;II&quot;</span>)</code></pre></div>
+<pre><code>## Anova Table (Type II tests)
+## 
+## Response: freqC
+##                Sum Sq Df F value    Pr(&gt;F)    
+## Sexe             0.90  1  0.3068  0.583745    
+## Sport_fac      475.15  4 40.4957 1.105e-11 ***
+## Sexe:Sport_fac  51.85  4  4.4190  0.006299 ** 
+## Residuals       88.00 30                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">autoplot</span>(lmInt, <span class="dt">data =</span> freq)</code></pre></div>
+<p><img src="anova2_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>Modèle sans interaction :</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> lm1 &lt;-<span class="st"> </span><span class="kw">lm</span>(freqC<span class="op">~</span>Sexe<span class="op">+</span>Sport_fac, <span class="dt">data=</span>freq)
+ <span class="kw">summary</span>(lm1)</code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = freqC ~ Sexe + Sport_fac, data = freq)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -4.275 -1.600 -0.125  1.462  3.100 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  79.9750     0.7855 101.816  &lt; 2e-16 ***
+## SexeM         0.3000     0.6413   0.468    0.643    
+## Sport_fac2    1.6250     1.0141   1.602    0.118    
+## Sport_fac3    4.6250     1.0141   4.561 6.32e-05 ***
+## Sport_fac4    5.3750     1.0141   5.300 6.99e-06 ***
+## Sport_fac5   10.0000     1.0141   9.861 1.67e-11 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 2.028 on 34 degrees of freedom
+## Multiple R-squared:  0.7729, Adjusted R-squared:  0.7395 
+## F-statistic: 23.15 on 5 and 34 DF,  p-value: 4.63e-10</code></pre>
+<p>Question : <code>Y a-t-il un effet de la pratique sportive  sur la fréquence cardiaque au repos ?''\\ Question :</code>Y a-t-il un effet du sexe sur la fréquence cardiaque au repos ?’’</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">anova</span>(lm1)</code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Response: freqC
+##           Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## Sexe       1   0.90   0.900  0.2188    0.6429    
+## Sport_fac  4 475.15 118.788 28.8793 1.643e-10 ***
+## Residuals 34 139.85   4.113                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">Anova</span>(lm1, <span class="dt">type=</span><span class="st">&quot;II&quot;</span>)</code></pre></div>
+<pre><code>## Anova Table (Type II tests)
+## 
+## Response: freqC
+##           Sum Sq Df F value    Pr(&gt;F)    
+## Sexe        0.90  1  0.2188    0.6429    
+## Sport_fac 475.15  4 28.8793 1.643e-10 ***
+## Residuals 139.85 34                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">autoplot</span>(lm1)</code></pre></div>
+<p><img src="anova2_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+<div id="anova-deux-facteurs-plan-desequilibre" class="section level1">
+<h1>{Anova deux facteurs, plan déséquilibré}</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> freq2 &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="dt">file=</span><span class="st">&quot;data/FreqCardiaqueDes1.txt&quot;</span>, <span class="dt">header=</span>T)
+freq2 &lt;-<span class="st"> </span>freq2 <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">Sport_fac =</span> <span class="kw">as.factor</span>(Sport))
+
+freq2 <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">count</span>(Sport, Sexe) </code></pre></div>
+<pre><code>## # A tibble: 10 x 3
+##    Sport Sexe      n
+##    &lt;int&gt; &lt;fct&gt; &lt;int&gt;
+##  1     1 F         6
+##  2     1 M         3
+##  3     2 F         3
+##  4     2 M         2
+##  5     3 F         5
+##  6     3 M         6
+##  7     4 F         3
+##  8     4 M         5
+##  9     5 F         2
+## 10     5 M         5</code></pre>
+<p>Moyennes et écart-types par groupes :</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">freq2 <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(Sport) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">mean_freq =</span> <span class="kw">mean</span>(freqC)) </code></pre></div>
+<pre><code>## # A tibble: 5 x 2
+##   Sport mean_freq
+##   &lt;int&gt;     &lt;dbl&gt;
+## 1     1      80.6
+## 2     2      81.8
+## 3     3      85.4
+## 4     4      85.4
+## 5     5      91.3</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">freq2 <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(Sexe) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">mean_freq =</span> <span class="kw">mean</span>(freqC)) </code></pre></div>
+<pre><code>## # A tibble: 2 x 2
+##   Sexe  mean_freq
+##   &lt;fct&gt;     &lt;dbl&gt;
+## 1 F          83.7
+## 2 M          85.9</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">freq2 <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(Sport, Sexe) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">mean_freq =</span> <span class="kw">mean</span>(freqC)) </code></pre></div>
+<pre><code>## # A tibble: 10 x 3
+## # Groups:   Sport [?]
+##    Sport Sexe  mean_freq
+##    &lt;int&gt; &lt;fct&gt;     &lt;dbl&gt;
+##  1     1 F          80.7
+##  2     1 M          80.3
+##  3     2 F          83  
+##  4     2 M          80  
+##  5     3 F          83  
+##  6     3 M          87.3
+##  7     4 F          85.7
+##  8     4 M          85.2
+##  9     5 F          93  
+## 10     5 M          90.6</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(freq2, <span class="kw">aes</span>(<span class="dt">y=</span>freqC, <span class="dt">x =</span> Sport_fac)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_boxplot</span>()
+  
+p2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(freq2, <span class="kw">aes</span>(<span class="dt">y=</span>freqC, <span class="dt">x =</span> Sexe)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_boxplot</span>()
+
+<span class="kw">ggarrange</span>(p1,p2<span class="op">+</span><span class="kw">rremove</span>(<span class="st">&#39;ylab&#39;</span>))</code></pre></div>
+<p><img src="anova2_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">freq2 <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> Sport_fac, <span class="dt">color =</span> Sexe, <span class="dt">group =</span> Sexe, <span class="dt">y =</span> freqC) <span class="op">+</span>
+<span class="st">  </span><span class="kw">stat_summary</span>(<span class="dt">fun.y =</span> mean, <span class="dt">geom =</span> <span class="st">&quot;point&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">stat_summary</span>(<span class="dt">fun.y =</span> mean, <span class="dt">geom =</span> <span class="st">&quot;line&quot;</span>)</code></pre></div>
+<p><img src="anova2_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> lm2 &lt;-<span class="st"> </span><span class="kw">lm</span>(freqC<span class="op">~</span>Sexe<span class="op">+</span>Sport, <span class="dt">data=</span>freq2)
+<span class="kw">autoplot</span>(lm2)</code></pre></div>
+<p><img src="anova2_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">anova</span>(lm2)</code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Response: freqC
+##           Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## Sexe       1  46.88   46.88  9.9993  0.003122 ** 
+## Sport      1 408.02  408.02 87.0269 2.944e-11 ***
+## Residuals 37 173.47    4.69                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">Anova</span>(lm2, <span class="dt">type=</span><span class="st">&quot;II&quot;</span>)</code></pre></div>
+<pre><code>## Anova Table (Type II tests)
+## 
+## Response: freqC
+##           Sum Sq Df F value    Pr(&gt;F)    
+## Sexe        1.22  1   0.260    0.6131    
+## Sport     408.02  1  87.027 2.944e-11 ***
+## Residuals 173.47 37                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
