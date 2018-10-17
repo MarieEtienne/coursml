@@ -372,6 +372,9 @@ div.tocify {
     <li>
       <a href="anova2.html">Anova</a>
     </li>
+    <li>
+      <a href="regression.html">Regression</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -537,18 +540,101 @@ p2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(freq, <span clas
 ## F-statistic:    20 on 9 and 30 DF,  p-value: 2.327e-10</code></pre>
 <p>Question : <code>Y a-t-il un effet de la pratique sportive  sur la fréquence cardiaque au repos ?'' \\ Question :</code>Y a-t-il un effet du sexe sur la fréquence cardiaque au repos ?’’</p>
 <p>Question : ``Y a-t-il un effet du sexe en interaction avec la pratique sportive sur la fréquence cardiaque au repos ?’’</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">anova</span>(lmInt)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">autoplot</span>(lmInt, <span class="dt">data =</span> freq)</code></pre></div>
+<p><img src="anova2_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lm0 &lt;-<span class="st"> </span><span class="kw">lm</span>(freqC <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data=</span>freq)
+<span class="kw">anova</span>(lm0, lmInt)</code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: freqC ~ 1
+## Model 2: freqC ~ Sexe + Sport_fac + Sexe * Sport_fac
+##   Res.Df   RSS Df Sum of Sq      F    Pr(&gt;F)    
+## 1     39 615.9                                  
+## 2     30  88.0  9     527.9 19.996 2.327e-10 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lm12 &lt;-<span class="st"> </span><span class="kw">lm</span>( freqC <span class="op">~</span><span class="st"> </span>Sexe <span class="op">+</span><span class="st"> </span>Sport_fac, <span class="dt">data =</span> freq)
+<span class="kw">summary</span>(lm12)</code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = freqC ~ Sexe + Sport_fac, data = freq)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -4.275 -1.600 -0.125  1.462  3.100 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  79.9750     0.7855 101.816  &lt; 2e-16 ***
+## SexeM         0.3000     0.6413   0.468    0.643    
+## Sport_fac2    1.6250     1.0141   1.602    0.118    
+## Sport_fac3    4.6250     1.0141   4.561 6.32e-05 ***
+## Sport_fac4    5.3750     1.0141   5.300 6.99e-06 ***
+## Sport_fac5   10.0000     1.0141   9.861 1.67e-11 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 2.028 on 34 degrees of freedom
+## Multiple R-squared:  0.7729, Adjusted R-squared:  0.7395 
+## F-statistic: 23.15 on 5 and 34 DF,  p-value: 4.63e-10</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lm1 &lt;-<span class="st"> </span><span class="kw">lm</span>( freqC <span class="op">~</span><span class="st"> </span>Sexe , <span class="dt">data =</span> freq)
+<span class="kw">anova</span>(lm0, lm1)</code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: freqC ~ 1
+## Model 2: freqC ~ Sexe
+##   Res.Df   RSS Df Sum of Sq      F Pr(&gt;F)
+## 1     39 615.9                           
+## 2     38 615.0  1       0.9 0.0556 0.8148</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lm2 &lt;-<span class="st"> </span><span class="kw">lm</span>( freqC <span class="op">~</span><span class="st"> </span>Sport_fac , <span class="dt">data =</span> freq)
+<span class="kw">anova</span>(lm2, lm12)</code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: freqC ~ Sport_fac
+## Model 2: freqC ~ Sexe + Sport_fac
+##   Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)
+## 1     35 140.75                           
+## 2     34 139.85  1       0.9 0.2188 0.6429</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> lmInt2 &lt;-<span class="st"> </span><span class="kw">lm</span>(freqC<span class="op">~</span>Sport_fac <span class="op">+</span><span class="st"> </span>Sexe<span class="op">+</span><span class="st"> </span>Sexe<span class="op">:</span>Sport_fac, <span class="dt">data=</span>freq)
+ <span class="kw">summary</span>(lmInt)</code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = freqC ~ Sexe + Sport_fac + Sexe * Sport_fac, data = freq)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+##  -3.25  -1.00   0.00   1.00   3.75 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)       81.0000     0.8563  94.588  &lt; 2e-16 ***
+## SexeM             -1.7500     1.2111  -1.445 0.158819    
+## Sport_fac2         1.5000     1.2111   1.239 0.225104    
+## Sport_fac3         1.5000     1.2111   1.239 0.225104    
+## Sport_fac4         4.7500     1.2111   3.922 0.000473 ***
+## Sport_fac5         8.7500     1.2111   7.225 4.84e-08 ***
+## SexeM:Sport_fac2   0.2500     1.7127   0.146 0.884923    
+## SexeM:Sport_fac3   6.2500     1.7127   3.649 0.000991 ***
+## SexeM:Sport_fac4   1.2500     1.7127   0.730 0.471147    
+## SexeM:Sport_fac5   2.5000     1.7127   1.460 0.154770    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.713 on 30 degrees of freedom
+## Multiple R-squared:  0.8571, Adjusted R-squared:  0.8143 
+## F-statistic:    20 on 9 and 30 DF,  p-value: 2.327e-10</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">anova</span>(lmInt2)</code></pre></div>
 <pre><code>## Analysis of Variance Table
 ## 
 ## Response: freqC
 ##                Df Sum Sq Mean Sq F value    Pr(&gt;F)    
-## Sexe            1   0.90   0.900  0.3068  0.583745    
 ## Sport_fac       4 475.15 118.788 40.4957 1.105e-11 ***
-## Sexe:Sport_fac  4  51.85  12.963  4.4190  0.006299 ** 
+## Sexe            1   0.90   0.900  0.3068  0.583745    
+## Sport_fac:Sexe  4  51.85  12.963  4.4190  0.006299 ** 
 ## Residuals      30  88.00   2.933                      
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">Anova</span>(lmInt, <span class="dt">type=</span><span class="st">&quot;II&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Anova</span>(lmInt, <span class="dt">type=</span><span class="st">&quot;II&quot;</span>)</code></pre></div>
 <pre><code>## Anova Table (Type II tests)
 ## 
 ## Response: freqC
@@ -559,8 +645,6 @@ p2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(freq, <span clas
 ## Residuals       88.00 30                      
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">autoplot</span>(lmInt, <span class="dt">data =</span> freq)</code></pre></div>
-<p><img src="anova2_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <p>Modèle sans interaction :</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> lm1 &lt;-<span class="st"> </span><span class="kw">lm</span>(freqC<span class="op">~</span>Sexe<span class="op">+</span>Sport_fac, <span class="dt">data=</span>freq)
  <span class="kw">summary</span>(lm1)</code></pre></div>
@@ -587,7 +671,9 @@ p2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(freq, <span clas
 ## Multiple R-squared:  0.7729, Adjusted R-squared:  0.7395 
 ## F-statistic: 23.15 on 5 and 34 DF,  p-value: 4.63e-10</code></pre>
 <p>Question : <code>Y a-t-il un effet de la pratique sportive  sur la fréquence cardiaque au repos ?''\\ Question :</code>Y a-t-il un effet du sexe sur la fréquence cardiaque au repos ?’’</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">anova</span>(lm1)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">autoplot</span>(lm1)</code></pre></div>
+<p><img src="anova2_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">anova</span>(lm1)</code></pre></div>
 <pre><code>## Analysis of Variance Table
 ## 
 ## Response: freqC
@@ -597,7 +683,7 @@ p2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(freq, <span clas
 ## Residuals 34 139.85   4.113                      
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">Anova</span>(lm1, <span class="dt">type=</span><span class="st">&quot;II&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Anova</span>(lm1, <span class="dt">type=</span><span class="st">&quot;II&quot;</span>)</code></pre></div>
 <pre><code>## Anova Table (Type II tests)
 ## 
 ## Response: freqC
@@ -607,8 +693,6 @@ p2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(freq, <span clas
 ## Residuals 139.85 34                      
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">autoplot</span>(lm1)</code></pre></div>
-<p><img src="anova2_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="anova-deux-facteurs-plan-desequilibre" class="section level1">
 <h1>{Anova deux facteurs, plan déséquilibré}</h1>
@@ -665,36 +749,104 @@ freq2 <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">co
 p2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(freq2, <span class="kw">aes</span>(<span class="dt">y=</span>freqC, <span class="dt">x =</span> Sexe)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_boxplot</span>()
 
 <span class="kw">ggarrange</span>(p1,p2<span class="op">+</span><span class="kw">rremove</span>(<span class="st">&#39;ylab&#39;</span>))</code></pre></div>
-<p><img src="anova2_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="anova2_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">freq2 <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span>
 <span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> Sport_fac, <span class="dt">color =</span> Sexe, <span class="dt">group =</span> Sexe, <span class="dt">y =</span> freqC) <span class="op">+</span>
 <span class="st">  </span><span class="kw">stat_summary</span>(<span class="dt">fun.y =</span> mean, <span class="dt">geom =</span> <span class="st">&quot;point&quot;</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">stat_summary</span>(<span class="dt">fun.y =</span> mean, <span class="dt">geom =</span> <span class="st">&quot;line&quot;</span>)</code></pre></div>
-<p><img src="anova2_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> lm2 &lt;-<span class="st"> </span><span class="kw">lm</span>(freqC<span class="op">~</span>Sexe<span class="op">+</span>Sport, <span class="dt">data=</span>freq2)
-<span class="kw">autoplot</span>(lm2)</code></pre></div>
+<p><img src="anova2_files/figure-html/unnamed-chunk-11-2.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lmInt_des &lt;-<span class="st"> </span><span class="kw">lm</span>(freqC<span class="op">~</span><span class="st"> </span>Sexe <span class="op">+</span><span class="st"> </span>Sport_fac <span class="op">+</span><span class="st"> </span>Sexe <span class="op">:</span><span class="st"> </span>Sport_fac, <span class="dt">data=</span>freq2)
+lmInt_des_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">lm</span>(freqC<span class="op">~</span><span class="st"> </span>Sport_fac <span class="op">+</span>Sexe <span class="op">+</span><span class="st"> </span>Sexe <span class="op">:</span><span class="st"> </span>Sport_fac, <span class="dt">data=</span>freq2)
+<span class="kw">autoplot</span>(lmInt_des_<span class="dv">2</span>)</code></pre></div>
 <p><img src="anova2_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">anova</span>(lm2)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">anova</span>(lmInt_des)</code></pre></div>
 <pre><code>## Analysis of Variance Table
 ## 
 ## Response: freqC
-##           Df Sum Sq Mean Sq F value    Pr(&gt;F)    
-## Sexe       1  46.88   46.88  9.9993  0.003122 ** 
-## Sport      1 408.02  408.02 87.0269 2.944e-11 ***
-## Residuals 37 173.47    4.69                      
+##                Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## Sexe            1  46.88  46.881  28.129 9.882e-06 ***
+## Sport_fac       4 461.77 115.441  69.265 1.025e-14 ***
+## Sexe:Sport_fac  4  69.73  17.432  10.459 1.995e-05 ***
+## Residuals      30  50.00   1.667                      
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">Anova</span>(lm2, <span class="dt">type=</span><span class="st">&quot;II&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">anova</span>(lmInt_des_<span class="dv">2</span>)</code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Response: freqC
+##                Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## Sport_fac       4 507.50 126.876 76.1256 2.863e-15 ***
+## Sexe            1   1.14   1.143  0.6857    0.4142    
+## Sport_fac:Sexe  4  69.73  17.432 10.4593 1.995e-05 ***
+## Residuals      30  50.00   1.667                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Anova</span>(lmInt_des_<span class="dv">2</span>, <span class="dt">type=</span><span class="st">&quot;II&quot;</span>)</code></pre></div>
 <pre><code>## Anova Table (Type II tests)
 ## 
 ## Response: freqC
-##           Sum Sq Df F value    Pr(&gt;F)    
-## Sexe        1.22  1   0.260    0.6131    
-## Sport     408.02  1  87.027 2.944e-11 ***
-## Residuals 173.47 37                      
+##                Sum Sq Df F value    Pr(&gt;F)    
+## Sport_fac      461.77  4 69.2648 1.025e-14 ***
+## Sexe             1.14  1  0.6857    0.4142    
+## Sport_fac:Sexe  69.73  4 10.4593 1.995e-05 ***
+## Residuals       50.00 30                      
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Anova</span>(lmInt_des_<span class="dv">2</span>, <span class="dt">type=</span><span class="st">&quot;III&quot;</span>)</code></pre></div>
+<pre><code>## Anova Table (Type III tests)
+## 
+## Response: freqC
+##                Sum Sq Df    F value    Pr(&gt;F)    
+## (Intercept)     39043  1 23425.6000 &lt; 2.2e-16 ***
+## Sport_fac         244  4    36.5526 3.935e-11 ***
+## Sexe                0  1     0.1333    0.7176    
+## Sport_fac:Sexe     70  4    10.4593 1.995e-05 ***
+## Residuals          50 30                         
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">emmeans</span>(lmInt_des_<span class="dv">2</span>,pairwise<span class="op">~</span>Sport_fac,<span class="dt">adjust=</span><span class="st">&quot;none&quot;</span>)</code></pre></div>
+<pre><code>## NOTE: Results may be misleading due to involvement in interactions</code></pre>
+<pre><code>## $emmeans
+##  Sport_fac   emmean        SE df lower.CL upper.CL
+##  1         80.50000 0.4564355 30 79.56783 81.43217
+##  2         81.50000 0.5892557 30 80.29658 82.70342
+##  3         85.16667 0.3908680 30 84.36841 85.96493
+##  4         85.43333 0.4714045 30 84.47060 86.39607
+##  5         91.80000 0.5400617 30 90.69705 92.90295
+## 
+## Results are averaged over the levels of: Sexe 
+## Confidence level used: 0.95 
+## 
+## $contrasts
+##  contrast    estimate        SE df t.ratio p.value
+##  1 - 2     -1.0000000 0.7453560 30  -1.342  0.1898
+##  1 - 3     -4.6666667 0.6009252 30  -7.766  &lt;.0001
+##  1 - 4     -4.9333333 0.6561673 30  -7.518  &lt;.0001
+##  1 - 5    -11.3000000 0.7071068 30 -15.981  &lt;.0001
+##  2 - 3     -3.6666667 0.7071068 30  -5.185  &lt;.0001
+##  2 - 4     -3.9333333 0.7546154 30  -5.212  &lt;.0001
+##  2 - 5    -10.3000000 0.7993053 30 -12.886  &lt;.0001
+##  3 - 4     -0.2666667 0.6123724 30  -0.435  0.6663
+##  3 - 5     -6.6333333 0.6666667 30  -9.950  &lt;.0001
+##  4 - 5     -6.3666667 0.7168604 30  -8.881  &lt;.0001
+## 
+## Results are averaged over the levels of: Sexe</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">emmeans</span>(lmInt_des_<span class="dv">2</span>,pairwise<span class="op">~</span>Sexe,<span class="dt">adjust=</span><span class="st">&quot;none&quot;</span>)</code></pre></div>
+<pre><code>## NOTE: Results may be misleading due to involvement in interactions</code></pre>
+<pre><code>## $emmeans
+##  Sexe   emmean        SE df lower.CL upper.CL
+##  F    85.06667 0.3197221 30 84.41371 85.71963
+##  M    84.69333 0.3055050 30 84.06941 85.31726
+## 
+## Results are averaged over the levels of: Sport_fac 
+## Confidence level used: 0.95 
+## 
+## $contrasts
+##  contrast  estimate        SE df t.ratio p.value
+##  F - M    0.3733333 0.4422166 30   0.844  0.4052
+## 
+## Results are averaged over the levels of: Sport_fac</code></pre>
 </div>
 
 

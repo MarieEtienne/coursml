@@ -26,7 +26,7 @@ library(emmeans)
 
 
  
-#Présentation
+# Présentation
 
 On a enregistré pour 40 personnes, leur fréquence cardiaque au repos. On a noté pour chacune d'entre elles un niveau d'activité physique moyen ainsi que leur sexe. La variable sport varie de 1, très sportif, à 5 très sédentaire.
 
@@ -83,6 +83,7 @@ Modèle avec interaction :
  lmInt <- lm(freqC~Sexe+Sport+Sexe*Sport, data=freq)
  summary(lmInt)
 ```
+
 ```{r}
  lmInt <- lm(freqC~Sexe+Sport_fac+Sexe*Sport_fac, data=freq)
  summary(lmInt)
@@ -93,14 +94,30 @@ Question : ``Y a-t-il un effet du sexe  sur la fréquence cardiaque au repos ?''
 
 Question : ``Y a-t-il un effet du sexe en interaction avec la pratique sportive sur la fréquence cardiaque au repos ?''
 ```{r}
- anova(lmInt)
- Anova(lmInt, type="II")
-```
-
-
-```{r}
 autoplot(lmInt, data = freq)
+
+lm0 <- lm(freqC ~ 1, data=freq)
+anova(lm0, lmInt)
+
+lm12 <- lm( freqC ~ Sexe + Sport_fac, data = freq)
+summary(lm12)
+
+
+lm1 <- lm( freqC ~ Sexe , data = freq)
+anova(lm0, lm1)
+
+lm2 <- lm( freqC ~ Sport_fac , data = freq)
+anova(lm2, lm12)
+
+
+ lmInt2 <- lm(freqC~Sport_fac + Sexe+ Sexe:Sport_fac, data=freq)
+ summary(lmInt)
+
+ 
+ anova(lmInt2)
+Anova(lmInt, type="II")
 ```
+
 
 
 
@@ -119,9 +136,9 @@ Question : ``Y a-t-il un effet de la pratique sportive  sur la fréquence cardia
 Question : ``Y a-t-il un effet du sexe  sur la fréquence cardiaque au repos ?''
 
 ```{r}
- anova(lm1)
- Anova(lm1, type="II")
 autoplot(lm1)
+anova(lm1)
+Anova(lm1, type="II")
 ```
 
 
@@ -166,9 +183,21 @@ freq2 %>%
 
 
 ```{r}
- lm2 <- lm(freqC~Sexe+Sport, data=freq2)
-autoplot(lm2)
- anova(lm2)
- Anova(lm2, type="II")
+```
+
+```{r}
+lmInt_des <- lm(freqC~ Sexe + Sport_fac + Sexe : Sport_fac, data=freq2)
+lmInt_des_2 <- lm(freqC~ Sport_fac +Sexe + Sexe : Sport_fac, data=freq2)
+autoplot(lmInt_des_2)
+
+anova(lmInt_des)
+anova(lmInt_des_2)
+
+Anova(lmInt_des_2, type="II")
+Anova(lmInt_des_2, type="III")
+
+emmeans(lmInt_des_2,pairwise~Sport_fac,adjust="none")
+
+emmeans(lmInt_des_2,pairwise~Sexe,adjust="none")
 ```
 

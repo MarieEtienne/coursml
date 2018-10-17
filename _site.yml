@@ -34,6 +34,8 @@ navbar:
     menu:
       - text: "Anova"
         href: anova2.html
+      - text: "Regression"
+        href: regression.html
 
 output:
   html_document:

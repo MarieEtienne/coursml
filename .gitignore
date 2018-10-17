@@ -2,20 +2,4 @@
 .Rhistory
 .RData
 .Ruserdata
-ajust_modele_cache/
-echant_strategie_files/
-echant_strategie_cache/
-echant_variabilite_cache/
-echant_variabilite_files/
-index_cache/
-intror_manip_cache/
-intror_presentation_cache/
-intror_presentation_files/
-intror_rappel_cache/
-intror_rappel_files/
-intror_rstudio_cache/
-intror_visu_cache/
-intror_visu_files/
-simu_growth_cache/
-simu_growth_files/
 
