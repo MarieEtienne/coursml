@@ -1,0 +1,136 @@
+---
+title: "Analyse de la covariance"
+output: 
+  html_document:
+   toc: true
+   toc_float: true
+   logo: LogoAgrocampusOuest.jpg
+   number_sections: false
+   highlight: tango
+   css: style.css
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+#pour la fonction Anova
+library(car)
+# pour le tidyverse
+library(dplyr)
+# pour les graphiques
+library(ggplot2) 
+library(ggfortify)
+library(ggpubr)
+# pour les moyennes ajustées
+library(emmeans) 
+```
+
+On souhaite étudier la hauteur de pins en fonction de leur diamètre. Les données comportent deux variétés de pins, des jaunes et des blancs.
+
+# Données observées
+
+
+```{r}
+pin=read.table('data/Pin.txt',header=T)
+head(pin,10)
+dim(pin)
+
+summary(pin)
+
+pin %>% filter(Espece == 'blanc') %>% summary
+pin %>% filter(Espece == 'jaune') %>% summary
+
+ggplot(pin, aes(x=Diametre, y = Hauteur, col = Espece)) + geom_point()
+```
+
+# Régression linéaire simple
+
+```{r}
+reglin=lm(Hauteur~Diametre,data=pin)
+autoplot(reglin)
+summary(reglin)
+```
+
+## graphe des residus en fonction de la variete
+```{r}
+df <- pin %>% mutate(fit = fitted(reglin), res= residuals(reglin))
+ggplot(df, aes(x=fit, y=res, col=Espece)) + geom_point() + geom_smooth(stat='smooth', se = FALSE)
+```
+
+
+
+# Regressions linéaires par variété
+
+On pourrait tenter de faire une regression par espèce mais on ne pourra pas comparer les variétés.
+
+# Modèle d'analyse de la covariance
+
+
+```{r}
+modancova <- lm(Hauteur~Diametre+Espece+Diametre:Espece,data=pin)
+
+autoplot(modancova)
+
+summary(modancova)
+anova(modancova)
+Anova(modancova)
+
+```
+
+
+Quelles conséquences si on enlève l'interaction ?
+
+## Moyennes ajustées
+
+
+
+```{r}
+emmeans(modancova,  pairwise~Espece,adjust="none")
+```
+
+
+###################################################
+### code chunk number 6: pin.Rnw:93-97
+###################################################
+#graphe des residus en fonction de la variete
+plot(fitted(modancova),residuals(modancova),pch=8+tp)
+legend("topright",legend = c("blanc","jaune"),pch=c(8,17))
+abline(0,0,lty=2)
+
+
+###################################################
+### code chunk number 7: pin.Rnw:103-111
+###################################################
+modancsI=lm(Hauteur~Diametre+Espece,data=pin)
+summary(modancsI)
+anova(modancsI)
+
+Anova(modancsI)
+
+par(mfrow=c(2,2))
+plot(modancsI)
+
+\end{verbatim}
+
+\end{document}
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

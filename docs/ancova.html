@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Analyse de la covariance</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/lumen.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/font-awesome-5.0.13/css/fa-svg-with-js.css" rel="stylesheet" />
+<script src="site_libs/font-awesome-5.0.13/js/fontawesome-all.min.js"></script>
+<script src="site_libs/font-awesome-5.0.13/js/fa-v4-shims.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 54px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+
+.section h2 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h3 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h4 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h5 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+.section h6 {
+  padding-top: 59px;
+  margin-top: -59px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Modèle linéaire pour l'écologie</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Organisation</a>
+</li>
+<li>
+  <a href="https://github.com/MarieEtienne/coursml">
+    <span class="fa fa-github"></span>
+     
+    dépôt github
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-child"></span>
+     
+    Introduction à R
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="intror_presentation.html">Présentation du logiciel R</a>
+    </li>
+    <li>
+      <a href="intror_rstudio.html">Environnement RStudio</a>
+    </li>
+    <li>
+      <a href="intror_manip.html">Manipulation de données</a>
+    </li>
+    <li>
+      <a href="intror_visu.html">Visualisation</a>
+    </li>
+    <li>
+      <a href="intror_rappel.html">Rappels de statistique</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-adjust"></span>
+     
+    Echantillonnage
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="echant_variabilite.html">Statistique inférentielle, généralités</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-tilde"></span>
+     
+    Modèle linéaire
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="anova2.html">Anova</a>
+    </li>
+    <li>
+      <a href="regression.html">Regression</a>
+    </li>
+    <li>
+      <a href="ancova.html">Analyse de la covariance</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Analyse de la covariance</h1>
+
+</div>
+
+
+<p>On souhaite étudier la hauteur de pins en fonction de leur diamètre. Les données comportent deux variétés de pins, des jaunes et des blancs.</p>
+<div id="donnees-observees" class="section level1">
+<h1>Données observées</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pin=<span class="kw">read.table</span>(<span class="st">&#39;data/Pin.txt&#39;</span>,<span class="dt">header=</span>T)
+<span class="kw">head</span>(pin,<span class="dv">10</span>)</code></pre></div>
+<pre><code>##    Espece Diametre Hauteur
+## 1   blanc     21.2     127
+## 2   blanc     20.2     119
+## 3   blanc     24.6     135
+## 4   blanc     23.0     132
+## 5   blanc     27.2     130
+## 6   blanc     18.6     130
+## 7   blanc     17.3     110
+## 8   blanc     10.0      75
+## 9   blanc     19.7     110
+## 10  blanc     22.3     124</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(pin)</code></pre></div>
+<pre><code>## [1] 39  3</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(pin)</code></pre></div>
+<pre><code>##    Espece      Diametre        Hauteur      
+##  blanc:21   Min.   : 5.60   Min.   : 25.00  
+##  jaune:18   1st Qu.:11.75   1st Qu.: 75.50  
+##             Median :17.30   Median :107.00  
+##             Mean   :16.74   Mean   : 95.59  
+##             3rd Qu.:21.15   3rd Qu.:119.50  
+##             Max.   :29.50   Max.   :141.00</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pin <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(Espece <span class="op">==</span><span class="st"> &#39;blanc&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>summary</code></pre></div>
+<pre><code>##    Espece      Diametre       Hauteur     
+##  blanc:21   Min.   : 5.6   Min.   : 51.0  
+##  jaune: 0   1st Qu.:11.1   1st Qu.: 95.0  
+##             Median :16.9   Median :110.0  
+##             Mean   :16.2   Mean   :105.7  
+##             3rd Qu.:21.2   3rd Qu.:127.0  
+##             Max.   :27.2   Max.   :141.0</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pin <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(Espece <span class="op">==</span><span class="st"> &#39;jaune&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>summary</code></pre></div>
+<pre><code>##    Espece      Diametre        Hauteur      
+##  blanc: 0   Min.   : 5.70   Min.   : 25.00  
+##  jaune:18   1st Qu.:12.75   1st Qu.: 62.50  
+##             Median :17.70   Median : 84.00  
+##             Mean   :17.38   Mean   : 83.78  
+##             3rd Qu.:20.82   3rd Qu.:109.00  
+##             Max.   :29.50   Max.   :122.00</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(pin, <span class="kw">aes</span>(<span class="dt">x=</span>Diametre, <span class="dt">y =</span> Hauteur, <span class="dt">col =</span> Espece)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>()</code></pre></div>
+<p><img src="ancova_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+</div>
+<div id="regression-lineaire-simple" class="section level1">
+<h1>Régression linéaire simple</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">reglin=<span class="kw">lm</span>(Hauteur<span class="op">~</span>Diametre,<span class="dt">data=</span>pin)
+<span class="kw">autoplot</span>(reglin)</code></pre></div>
+<p><img src="ancova_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(reglin)</code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = Hauteur ~ Diametre, data = pin)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -31.37 -13.68  -0.53  12.85  35.01 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  28.4607     8.1162   3.507  0.00121 ** 
+## Diametre      4.0099     0.4543   8.826 1.23e-10 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 17.69 on 37 degrees of freedom
+## Multiple R-squared:  0.678,  Adjusted R-squared:  0.6693 
+## F-statistic:  77.9 on 1 and 37 DF,  p-value: 1.23e-10</code></pre>
+<div id="graphe-des-residus-en-fonction-de-la-variete" class="section level2">
+<h2>graphe des residus en fonction de la variete</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st"> </span>pin <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">fit =</span> <span class="kw">fitted</span>(reglin), <span class="dt">res=</span> <span class="kw">residuals</span>(reglin))
+<span class="kw">ggplot</span>(df, <span class="kw">aes</span>(<span class="dt">x=</span>fit, <span class="dt">y=</span>res, <span class="dt">col=</span>Espece)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">stat=</span><span class="st">&#39;smooth&#39;</span>, <span class="dt">se =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="ancova_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+</div>
+<div id="regressions-lineaires-par-variete" class="section level1">
+<h1>Regressions linéaires par variété</h1>
+<p>On pourrait tenter de faire une regression par espèce mais on ne pourra pas comparer les variétés.</p>
+</div>
+<div id="modele-danalyse-de-la-covariance" class="section level1">
+<h1>Modèle d’analyse de la covariance</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">modancova &lt;-<span class="st"> </span><span class="kw">lm</span>(Hauteur<span class="op">~</span>Diametre<span class="op">+</span>Espece<span class="op">+</span>Diametre<span class="op">:</span>Espece,<span class="dt">data=</span>pin)
+
+<span class="kw">autoplot</span>(modancova)</code></pre></div>
+<p><img src="ancova_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(modancova)</code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = Hauteur ~ Diametre + Espece + Diametre:Espece, data = pin)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -19.5014  -8.2424  -0.7899   7.5008  28.3598 
+## 
+## Coefficients:
+##                      Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)           41.2747     6.8238   6.049 6.66e-07 ***
+## Diametre               3.9789     0.3926  10.136 5.95e-12 ***
+## Especejaune          -35.8390    10.5955  -3.382  0.00178 ** 
+## Diametre:Especejaune   0.5293     0.5899   0.897  0.37572    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 11.36 on 35 degrees of freedom
+## Multiple R-squared:  0.8744, Adjusted R-squared:  0.8637 
+## F-statistic: 81.25 on 3 and 35 DF,  p-value: 7.69e-16</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">anova</span>(modancova)</code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Response: Hauteur
+##                 Df  Sum Sq Mean Sq  F value    Pr(&gt;F)    
+## Diametre         1 24379.7 24379.7 188.9777 1.133e-15 ***
+## Espece           1  6960.6  6960.6  53.9542 1.377e-08 ***
+## Diametre:Espece  1   103.9   103.9   0.8051    0.3757    
+## Residuals       35  4515.3   129.0                       
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Anova</span>(modancova)</code></pre></div>
+<pre><code>## Anova Table (Type II tests)
+## 
+## Response: Hauteur
+##                  Sum Sq Df  F value    Pr(&gt;F)    
+## Diametre        26676.2  1 206.7790 2.952e-16 ***
+## Espece           6960.6  1  53.9542 1.377e-08 ***
+## Diametre:Espece   103.9  1   0.8051    0.3757    
+## Residuals        4515.3 35                       
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Quelles conséquences si on enlève l’interaction ?</p>
+<div id="moyennes-ajustees" class="section level2">
+<h2>Moyennes ajustées</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">emmeans</span>(modancova,  pairwise<span class="op">~</span>Espece,<span class="dt">adjust=</span><span class="st">&quot;none&quot;</span>)</code></pre></div>
+<pre><code>## NOTE: Results may be misleading due to involvement in interactions</code></pre>
+<pre><code>## $emmeans
+##  Espece    emmean       SE df  lower.CL  upper.CL
+##  blanc  107.88593 2.487804 35 102.83542 112.93644
+##  jaune   80.90719 2.691789 35  75.44257  86.37181
+## 
+## Confidence level used: 0.95 
+## 
+## $contrasts
+##  contrast      estimate       SE df t.ratio p.value
+##  blanc - jaune 26.97874 3.665364 35    7.36  &lt;.0001</code></pre>
+<div id="section" class="section level51">
+<p></p>
+</div>
+<div id="code-chunk-number-6-pin.rnw93-97" class="section level3">
+<h3>code chunk number 6: pin.Rnw:93-97</h3>
+<div id="section-1" class="section level51">
+<p></p>
+</div>
+</div>
+</div>
+</div>
+<div id="graphe-des-residus-en-fonction-de-la-variete-1" class="section level1">
+<h1>graphe des residus en fonction de la variete</h1>
+<p>plot(fitted(modancova),residuals(modancova),pch=8+tp) legend(“topright”,legend = c(“blanc”,“jaune”),pch=c(8,17)) abline(0,0,lty=2)</p>
+<div id="section-2" class="section level51">
+<p></p>
+</div>
+<div id="code-chunk-number-7-pin.rnw103-111" class="section level3">
+<h3>code chunk number 7: pin.Rnw:103-111</h3>
+<div id="section-3" class="section level51">
+<p></p>
+<p>modancsI=lm(Hauteur~Diametre+Espece,data=pin) summary(modancsI) anova(modancsI)</p>
+<p>Anova(modancsI)</p>
+<p>par(mfrow=c(2,2)) plot(modancsI)</p>
+<p>\end{verbatim}</p>
+<p>\end{document}</p>
+</div>
+</div>
+<div id="r-markdown" class="section level2">
+<h2>R Markdown</h2>
+<p>This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <a href="http://rmarkdown.rstudio.com" class="uri">http://rmarkdown.rstudio.com</a>.</p>
+<p>When you click the <strong>Knit</strong> button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(cars)</code></pre></div>
+<pre><code>##      speed           dist       
+##  Min.   : 4.0   Min.   :  2.00  
+##  1st Qu.:12.0   1st Qu.: 26.00  
+##  Median :15.0   Median : 36.00  
+##  Mean   :15.4   Mean   : 42.98  
+##  3rd Qu.:19.0   3rd Qu.: 56.00  
+##  Max.   :25.0   Max.   :120.00</code></pre>
+</div>
+<div id="including-plots" class="section level2">
+<h2>Including Plots</h2>
+<p>You can also embed plots, for example:</p>
+<p><img src="ancova_files/figure-html/pressure-1.png" width="672" /></p>
+<p>Note that the <code>echo = FALSE</code> parameter was added to the code chunk to prevent printing of the R code that generated the plot.</p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -36,6 +36,8 @@ navbar:
         href: anova2.html
       - text: "Regression"
         href: regression.html
+      - text: "Analyse de la covariance"
+        href: ancova.html
 
 output:
   html_document:

@@ -114,27 +114,37 @@ sum(h.us.lm)
 sum(h.us.lm)/length(usdata$SO2)
 ```
 
-Graphiques de diagnostics
-
-<<fig3plot, fig=TRUE, include=FALSE>>=
-par(mar=c(1,1,1,1), mfcol=c(2,2))
-plot(us.lm)
-@ 
 
 
-## test de l'effet du nombre d'industries
+## Test de l'effet du nombre d'industries
 
 ```{r}
+us.lm0 <- lm (SO2 ~ 1, data=usdata)
+summary(us.lm)
 anova(us.lm)
 Anova(us.lm)
 ```
+## Prediction
 
-## Régression multiple
+```{r}
+
+predict(us.lm,
+        newdata = data.frame(manuf = 200), interval = "prediction")
+```
+
+
+# Régression multiple
 
 Quelle est la question ?
 ```{r}
-us.lm2 <- lm(SO2~.,data=usdata)
+us.lm2 <- lm((SO2)~ precip + temp + manuf+ pop + wind +  days,data=usdata)
 autoplot(us.lm2)
+
+
+us.lm0 <- lm((SO2)~ 1,data=usdata)
+
+
+
 ## test de type I
 anova(us.lm2)
 ## test de type II
