@@ -11,7 +11,7 @@
 
 
 
-<title>Analyse de la covariance</title>
+<title>Modèle linéaire généralisé : les pruniers</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -389,157 +389,160 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Analyse de la covariance</h1>
+<h1 class="title toc-ignore">Modèle linéaire généralisé : les pruniers</h1>
 
 </div>
 
 
-<p>On souhaite étudier la hauteur de pins en fonction de leur diamètre. Les données comportent deux variétés de pins, des jaunes et des blancs.</p>
-<div id="donnees-observees" class="section level1">
-<h1>Données observées</h1>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pin=<span class="kw">read.table</span>(<span class="st">&#39;data/Pin.txt&#39;</span>,<span class="dt">header=</span>T)
-<span class="kw">head</span>(pin,<span class="dv">10</span>)</code></pre></div>
-<pre><code>##    Espece Diametre Hauteur
-## 1   blanc     21.2     127
-## 2   blanc     20.2     119
-## 3   blanc     24.6     135
-## 4   blanc     23.0     132
-## 5   blanc     27.2     130
-## 6   blanc     18.6     130
-## 7   blanc     17.3     110
-## 8   blanc     10.0      75
-## 9   blanc     19.7     110
-## 10  blanc     22.3     124</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(pin)</code></pre></div>
-<pre><code>## [1] 39  3</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(pin)</code></pre></div>
-<pre><code>##    Espece      Diametre        Hauteur      
-##  blanc:21   Min.   : 5.60   Min.   : 25.00  
-##  jaune:18   1st Qu.:11.75   1st Qu.: 75.50  
-##             Median :17.30   Median :107.00  
-##             Mean   :16.74   Mean   : 95.59  
-##             3rd Qu.:21.15   3rd Qu.:119.50  
-##             Max.   :29.50   Max.   :141.00</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pin <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(Espece <span class="op">==</span><span class="st"> &#39;blanc&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>summary</code></pre></div>
-<pre><code>##    Espece      Diametre       Hauteur     
-##  blanc:21   Min.   : 5.6   Min.   : 51.0  
-##  jaune: 0   1st Qu.:11.1   1st Qu.: 95.0  
-##             Median :16.9   Median :110.0  
-##             Mean   :16.2   Mean   :105.7  
-##             3rd Qu.:21.2   3rd Qu.:127.0  
-##             Max.   :27.2   Max.   :141.0</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pin <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(Espece <span class="op">==</span><span class="st"> &#39;jaune&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>summary</code></pre></div>
-<pre><code>##    Espece      Diametre        Hauteur      
-##  blanc: 0   Min.   : 5.70   Min.   : 25.00  
-##  jaune:18   1st Qu.:12.75   1st Qu.: 62.50  
-##             Median :17.70   Median : 84.00  
-##             Mean   :17.38   Mean   : 83.78  
-##             3rd Qu.:20.82   3rd Qu.:109.00  
-##             Max.   :29.50   Max.   :122.00</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(pin, <span class="kw">aes</span>(<span class="dt">x=</span>Diametre, <span class="dt">y =</span> Hauteur, <span class="dt">col =</span> Espece)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>()</code></pre></div>
-<p><img src="ancova_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<div id="presentation" class="section level1">
+<h1>Présentation</h1>
+<p>Nous cherchons à mesurer l’effet de la taille (influence de la longueur des racines et la date de replantation) sur la survie de plans de pruniers. Pour chacun des 4 traitements (Date * Longueur), les pruniers vivants et morts sont comptés.</p>
+<p>D’un point de vue opérationnel dans , on veut d’abord réorganiser les données pour avoir une observation par lignes :</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">prune &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;data/Prune.txt&quot;</span>,<span class="dt">header=</span>T)
+prune</code></pre></div>
+<pre><code>##   Longueur      Date   Etat Effectif
+## 1    court   automne vivant      156
+## 2    court   automne   mort       84
+## 3    court printemps vivant       84
+## 4    court printemps   mort      156
+## 5     long   automne vivant      107
+## 6     long   automne   mort      133
+## 7     long printemps vivant       31
+## 8     long printemps   mort      209</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">prune &lt;-<span class="st"> </span>prune <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">spread</span>(<span class="dt">key =</span> Etat, <span class="dt">value =</span> Effectif) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">total =</span> mort <span class="op">+</span><span class="st"> </span>vivant)</code></pre></div>
+<p>On peut ensuite regarder, les probabilités de survie empiriques sur nos données :</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">prune <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">SurvieEmpir =</span> vivant<span class="op">/</span>total)</code></pre></div>
+<pre><code>##   Longueur      Date mort vivant total SurvieEmpir
+## 1    court   automne   84    156   240   0.6500000
+## 2    court printemps  156     84   240   0.3500000
+## 3     long   automne  133    107   240   0.4458333
+## 4     long printemps  209     31   240   0.1291667</code></pre>
+<p>Il semble effectivement, qu’il y ait une différence de survie entre les différentes observations.</p>
 </div>
-<div id="regression-lineaire-simple" class="section level1">
-<h1>Régression linéaire simple</h1>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">reglin=<span class="kw">lm</span>(Hauteur<span class="op">~</span>Diametre,<span class="dt">data=</span>pin)
-<span class="kw">autoplot</span>(reglin)</code></pre></div>
-<p><img src="ancova_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(reglin)</code></pre></div>
+<div id="modele-logistique-sur-la-longueur" class="section level1">
+<h1>Modèle logistique sur la longueur</h1>
+<p>On souhaite savoir si la longueur a une influence sur la survie des plans de pruniers.</p>
+<p>Pour celà, on définit le modèle</p>
+<p><span class="math display">\[\mbox{M1} \left \lbrace \begin{array}{rl} 
+    Y_{ij} &amp; \overset{ind}{\sim}\mathcal{B}(n_{ij}, p_{i} ) \\
+    logit(p_{i})&amp;=\mu +\alpha_i
+  \end{array} \right.
+\]</span></p>
+<p>Ce moèle n’est pas identifiable, on doit ajouter une contrainte. La contrainte utilisée par  est <span class="math inline">\(\alpha_1=0\)</span>.</p>
+<p>&lt;&lt;&gt;&gt;= @</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">glm1 &lt;-<span class="st"> </span><span class="kw">glm</span>(<span class="kw">cbind</span>(vivant,mort)<span class="op">~</span>Longueur, <span class="dt">family=</span><span class="kw">binomial</span>(logit), <span class="dt">data=</span>prune)
+<span class="kw">summary</span>(glm1)</code></pre></div>
 <pre><code>## 
 ## Call:
-## lm(formula = Hauteur ~ Diametre, data = pin)
+## glm(formula = cbind(vivant, mort) ~ Longueur, family = binomial(logit), 
+##     data = prune)
 ## 
-## Residuals:
-##    Min     1Q Median     3Q    Max 
-## -31.37 -13.68  -0.53  12.85  35.01 
+## Deviance Residuals: 
+##      1       2       3       4  
+##  4.684  -4.684   5.200  -5.854  
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  28.4607     8.1162   3.507  0.00121 ** 
-## Diametre      4.0099     0.4543   8.826 1.23e-10 ***
+##                Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)   6.011e-17  9.129e-02   0.000        1    
+## Longueurlong -9.076e-01  1.360e-01  -6.672 2.53e-11 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 17.69 on 37 degrees of freedom
-## Multiple R-squared:  0.678,  Adjusted R-squared:  0.6693 
-## F-statistic:  77.9 on 1 and 37 DF,  p-value: 1.23e-10</code></pre>
-<div id="graphe-des-residus-en-fonction-de-la-variete" class="section level2">
-<h2>graphe des residus en fonction de la variete</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st"> </span>pin <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">fit =</span> <span class="kw">fitted</span>(reglin), <span class="dt">res=</span> <span class="kw">residuals</span>(reglin))
-<span class="kw">ggplot</span>(df, <span class="kw">aes</span>(<span class="dt">x=</span>fit, <span class="dt">y=</span>res, <span class="dt">col=</span>Espece)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">stat=</span><span class="st">&#39;smooth&#39;</span>, <span class="dt">se =</span> <span class="ot">FALSE</span>)</code></pre></div>
-<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<p><img src="ancova_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 151.02  on 3  degrees of freedom
+## Residual deviance: 105.18  on 2  degrees of freedom
+## AIC: 131.92
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>Les tests présentés dans la commande summary, sont les tests portant sur la nullité des paramètres et utilisent la normalité asymptotique des estimateurs du maximum de vraisemblance. Ici on voit que la statistique est notée  sur la troisième colonne, ce qui correspond à un test où la variance asymptotique des estimateurs est connue (sinon on aurait un test de student).</p>
+<p>On peut tester le modèle M1 contre le modèle M0, pour tester l’existence d’un effet de la longueur de coupe sur la survie. M0 désigne le modèle nul :</p>
+<p><span class="math display">\[\mbox{M0} \left \lbrace \begin{array}{rl} 
+    Y_{ij} &amp; \overset{ind}{\sim}\mathcal{B}(n_{ij}, p ) \\
+    logit(p_{i})&amp;=\mu 
+  \end{array} \right.
+\]</span></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">anova</span>(glm1, <span class="dt">test=</span><span class="st">&quot;Chisq&quot;</span>)</code></pre></div>
+<pre><code>## Analysis of Deviance Table
+## 
+## Model: binomial, link: logit
+## 
+## Response: cbind(vivant, mort)
+## 
+## Terms added sequentially (first to last)
+## 
+## 
+##          Df Deviance Resid. Df Resid. Dev  Pr(&gt;Chi)    
+## NULL                         3     151.02              
+## Longueur  1   45.837         2     105.18 1.285e-11 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Ici la déviance expliquée par le passage du modèle M0 au modèle M1 vaut 45.8. Sous l’hypothèse H0 : ``les deux modèles M0 et M1 sont équivalents’’, cette statistique suit une loi du Chi 2 à 1 degré de liberté. La probabilité critique associé à ce test vaut <span class="math inline">\(1.285e-11\)</span>, on rejette donc H0. La déviance résiduelle vaut 105.18, c’est la déviance qui reste inexpliquée par le modèle.</p>
 </div>
-</div>
-<div id="regressions-lineaires-par-variete" class="section level1">
-<h1>Regressions linéaires par variété</h1>
-<p>On pourrait tenter de faire une regression par espèce mais on ne pourra pas comparer les variétés.</p>
-</div>
-<div id="modele-danalyse-de-la-covariance" class="section level1">
-<h1>Modèle d’analyse de la covariance</h1>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">modancova &lt;-<span class="st"> </span><span class="kw">lm</span>(Hauteur<span class="op">~</span>Diametre<span class="op">+</span>Espece<span class="op">+</span>Diametre<span class="op">:</span>Espece,<span class="dt">data=</span>pin)
-
-<span class="kw">autoplot</span>(modancova)</code></pre></div>
-<p><img src="ancova_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(modancova)</code></pre></div>
+<div id="modele-logistique-sur-la-longueur-et-date" class="section level1">
+<h1>Modèle logistique sur la longueur et date</h1>
+<p>On souhaite savoir si la date ou la longueur de coupe ont un effet sur la survie des plans de pruniers.</p>
+<p>Pour cela, on pose le modèle</p>
+<p><span class="math display">\[\mbox{Mint} \left \lbrace \begin{array}{rl} 
+    Y_{ij} &amp; \overset{ind}{\sim}\mathcal{B}(n_{ij}, p_{ij} ) \\
+    logit(p_{i})&amp;=\mu +\alpha_i+\beta_j+\gamma_{ij}
+  \end{array} \right.
+\]</span></p>
+<p>Dans , on utilise les commandes suivantes pour estimer les paramètres du modèle.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">glmint &lt;-<span class="st"> </span><span class="kw">glm</span>(<span class="kw">cbind</span>(vivant,mort)<span class="op">~</span>Date<span class="op">+</span>Longueur<span class="op">+</span>Longueur<span class="op">*</span>Date, <span class="dt">family=</span><span class="kw">binomial</span>(logit), <span class="dt">data=</span>prune)
+<span class="kw">summary</span>(glmint)</code></pre></div>
 <pre><code>## 
 ## Call:
-## lm(formula = Hauteur ~ Diametre + Espece + Diametre:Espece, data = pin)
+## glm(formula = cbind(vivant, mort) ~ Date + Longueur + Longueur * 
+##     Date, family = binomial(logit), data = prune)
 ## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -19.5014  -8.2424  -0.7899   7.5008  28.3598 
+## Deviance Residuals: 
+## [1]  0  0  0  0
 ## 
 ## Coefficients:
-##                      Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)           41.2747     6.8238   6.049 6.66e-07 ***
-## Diametre               3.9789     0.3926  10.136 5.95e-12 ***
-## Especejaune          -35.8390    10.5955  -3.382  0.00178 ** 
-## Diametre:Especejaune   0.5293     0.5899   0.897  0.37572    
+##                            Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)                  0.6190     0.1353   4.574 4.78e-06 ***
+## Dateprintemps               -1.2381     0.1914  -6.469 9.87e-11 ***
+## Longueurlong                -0.8366     0.1876  -4.460 8.19e-06 ***
+## Dateprintemps:Longueurlong  -0.4527     0.3009  -1.505    0.132    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 11.36 on 35 degrees of freedom
-## Multiple R-squared:  0.8744, Adjusted R-squared:  0.8637 
-## F-statistic: 81.25 on 3 and 35 DF,  p-value: 7.69e-16</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">anova</span>(modancova)</code></pre></div>
-<pre><code>## Analysis of Variance Table
+## (Dispersion parameter for binomial family taken to be 1)
 ## 
-## Response: Hauteur
-##                 Df  Sum Sq Mean Sq  F value    Pr(&gt;F)    
-## Diametre         1 24379.7 24379.7 188.9777 1.133e-15 ***
-## Espece           1  6960.6  6960.6  53.9542 1.377e-08 ***
-## Diametre:Espece  1   103.9   103.9   0.8051    0.3757    
-## Residuals       35  4515.3   129.0                       
+##     Null deviance: 1.5102e+02  on 3  degrees of freedom
+## Residual deviance: 1.1191e-13  on 0  degrees of freedom
+## AIC: 30.742
+## 
+## Number of Fisher Scoring iterations: 3</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">anova</span>(glmint, <span class="dt">test=</span><span class="st">&quot;Chisq&quot;</span>)</code></pre></div>
+<pre><code>## Analysis of Deviance Table
+## 
+## Model: binomial, link: logit
+## 
+## Response: cbind(vivant, mort)
+## 
+## Terms added sequentially (first to last)
+## 
+## 
+##               Df Deviance Resid. Df Resid. Dev  Pr(&gt;Chi)    
+## NULL                              3    151.019              
+## Date           1   97.579         2     53.440 &lt; 2.2e-16 ***
+## Longueur       1   51.147         1      2.294 8.572e-13 ***
+## Date:Longueur  1    2.294         0      0.000    0.1299    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Anova</span>(modancova)</code></pre></div>
-<pre><code>## Anova Table (Type II tests)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Anova</span>(glmint, <span class="dt">test=</span><span class="st">&quot;LR&quot;</span>)</code></pre></div>
+<pre><code>## Analysis of Deviance Table (Type II tests)
 ## 
-## Response: Hauteur
-##                  Sum Sq Df  F value    Pr(&gt;F)    
-## Diametre        26676.2  1 206.7790 2.952e-16 ***
-## Espece           6960.6  1  53.9542 1.377e-08 ***
-## Diametre:Espece   103.9  1   0.8051    0.3757    
-## Residuals        4515.3 35                       
+## Response: cbind(vivant, mort)
+##               LR Chisq Df Pr(&gt;Chisq)    
+## Date           102.889  1  &lt; 2.2e-16 ***
+## Longueur        51.147  1  8.572e-13 ***
+## Date:Longueur    2.294  1     0.1299    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>Quelles conséquences si on enlève l’interaction ?</p>
-<div id="moyennes-ajustees" class="section level2">
-<h2>Moyennes ajustées</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">emmeans</span>(modancova,  pairwise<span class="op">~</span>Espece,<span class="dt">adjust=</span><span class="st">&quot;none&quot;</span>)</code></pre></div>
-<pre><code>## NOTE: Results may be misleading due to involvement in interactions</code></pre>
-<pre><code>## $emmeans
-##  Espece    emmean       SE df  lower.CL  upper.CL
-##  blanc  107.88593 2.487804 35 102.83542 112.93644
-##  jaune   80.90719 2.691789 35  75.44257  86.37181
-## 
-## Confidence level used: 0.95 
-## 
-## $contrasts
-##  contrast      estimate       SE df t.ratio p.value
-##  blanc - jaune 26.97874 3.665364 35    7.36  &lt;.0001</code></pre>
-</div>
+<p>La commande  donne les tests de type I, tandis que la commande  donne les tests de type II.</p>
 </div>
 
 

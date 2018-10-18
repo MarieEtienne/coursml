@@ -38,6 +38,8 @@ navbar:
         href: regression.html
       - text: "Analyse de la covariance"
         href: ancova.html
+      - text: "Modèle linéaire généralisé"
+        href: glm.html
 
 output:
   html_document:

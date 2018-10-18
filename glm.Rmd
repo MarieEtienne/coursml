@@ -1,0 +1,120 @@
+---
+title: "Modèle linéaire généralisé : les pruniers"
+output: 
+  html_document:
+   toc: true
+   toc_float: true
+   logo: LogoAgrocampusOuest.jpg
+   number_sections: false
+   highlight: tango
+   css: style.css
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+#pour la fonction Anova
+library(car)
+# pour le tidyverse
+library(dplyr)
+# pour les graphiques
+library(ggplot2) 
+library(ggfortify)
+library(ggpubr)
+# pour les moyennes ajustées
+library(emmeans) 
+```
+
+
+# Présentation
+Nous cherchons à mesurer l'effet de la taille (influence de la longueur des racines et la date de replantation) sur la survie de plans de pruniers. Pour chacun des 4 traitements (Date * Longueur), les pruniers vivants et morts sont comptés.
+
+
+D'un point de vue opérationnel dans \verb+R+, on veut d'abord réorganiser les données pour avoir une observation par lignes :
+
+```{r}
+prune <- read.table("data/Prune.txt",header=T)
+prune
+```
+
+```{r}
+prune <- prune %>% spread(key = Etat, value = Effectif) %>% mutate(total = mort + vivant)
+```
+
+
+
+On peut ensuite regarder, les probabilités de survie empiriques sur nos données :
+```{r}
+prune %>% mutate(SurvieEmpir = vivant/total)
+
+```
+
+
+Il semble effectivement, qu'il y ait une différence de survie entre les différentes observations.
+
+# Modèle logistique sur la longueur
+On souhaite savoir si la longueur a une influence sur la survie des plans de pruniers.
+
+Pour celà, on définit le modèle 
+
+$$\mbox{M1} \left \lbrace \begin{array}{rl} 
+    Y_{ij} & \overset{ind}{\sim}\mathcal{B}(n_{ij}, p_{i} ) \\
+    logit(p_{i})&=\mu +\alpha_i
+  \end{array} \right.
+$$
+
+Ce moèle n'est pas identifiable, on doit ajouter une contrainte. La contrainte utilisée par \verb+R+ est $\alpha_1=0$.
+
+
+<<>>=
+@ 
+```{r}
+glm1 <- glm(cbind(vivant,mort)~Longueur, family=binomial(logit), data=prune)
+summary(glm1)
+
+```
+
+Les tests présentés dans la commande summary, sont les tests portant sur la nullité des paramètres et utilisent la normalité asymptotique des estimateurs du maximum de vraisemblance. Ici on voit que la statistique est notée \verb+z+ sur la troisième colonne, ce qui correspond à un test où la variance asymptotique des estimateurs est connue (sinon on aurait un test de student).
+
+On peut tester le modèle M1 contre le modèle M0, pour tester l'existence d'un effet de la longueur de coupe sur la survie.
+ M0 désigne le modèle nul :
+
+$$\mbox{M0} \left \lbrace \begin{array}{rl} 
+    Y_{ij} & \overset{ind}{\sim}\mathcal{B}(n_{ij}, p ) \\
+    logit(p_{i})&=\mu 
+  \end{array} \right.
+$$
+
+```{r}
+anova(glm1, test="Chisq")
+```
+ 
+
+
+Ici la déviance expliquée par le passage du modèle M0 au modèle M1 vaut 45.8. Sous l'hypothèse H0 : ``les deux modèles M0 et M1 sont équivalents'', cette statistique suit une loi du Chi 2 à 1 degré de liberté. La probabilité critique associé à ce test vaut $1.285e-11$, on rejette donc H0. La déviance résiduelle vaut 105.18, c'est la déviance qui reste inexpliquée par le modèle.
+
+
+# Modèle logistique sur la longueur et date
+On souhaite savoir si la date ou la longueur de coupe ont un effet sur la survie des plans de pruniers.
+
+Pour cela, on pose le modèle 
+
+$$\mbox{Mint} \left \lbrace \begin{array}{rl} 
+    Y_{ij} & \overset{ind}{\sim}\mathcal{B}(n_{ij}, p_{ij} ) \\
+    logit(p_{i})&=\mu +\alpha_i+\beta_j+\gamma_{ij}
+  \end{array} \right.
+$$
+
+Dans \verb+R+, on utilise les commandes suivantes pour estimer les paramètres du modèle.
+
+
+```{r}
+glmint <- glm(cbind(vivant,mort)~Date+Longueur+Longueur*Date, family=binomial(logit), data=prune)
+summary(glmint)
+
+anova(glmint, test="Chisq")
+Anova(glmint, test="LR")
+```
+
+La commande \verb+anova+ donne les tests de type I, tandis que la commande \verb+Anova+ donne les tests de type II. 
+

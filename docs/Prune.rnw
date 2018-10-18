@@ -1,0 +1,118 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[dvips]{graphicx}
+\usepackage{Sweave}
+\usepackage{float}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage[normalsize,center,sc]{caption}
+
+
+ 
+\usepackage{fancyhdr}
+\setlength{\headheight}{15.8pt}
+\pagestyle{fancy}
+\usepackage{url}
+\usepackage[urlcolor=blue,linkcolor=blue, colorlinks=true]{hyperref}
+
+\title{Modèle linéaire généralisé}
+\SweaveOpts{prefix.string=Fig}
+\begin{document}
+\setkeys{Gin}{width=0.8\textwidth, height=10cm}
+
+\maketitle
+
+\tableofcontents
+
+\section{Présentation}
+Nous cherchons à mesurer l'effet de la taille (influence de la longueur des racines et la date de replantation) sur la survie de plans de pruniers. Pour chacun des 4 traitements (Date * Longueur), les pruniers vivants et morts sont comptés.
+
+<<>>=
+prune <- read.table("Prune.txt",header=T)
+prune
+@ 
+
+D'un point de vue opérationnel dans \verb+R+, on veut d'abord réorganiser les données pour avoir une observation par lignes :
+<<>>=
+prune.mod <- cbind(prune[prune[,3]=="vivant",1:2], Vivant=prune[prune[,3]=="vivant",4], Mort=prune[prune[,3]=="mort",4])
+@ 
+
+On peut ensuite regarder, les probabilités de survie empiriques sur nos données :
+<<>>=
+prune.mod$SurvieEmpir <- with(prune.mod, Vivant/(Vivant+Mort))
+prune.mod
+@ 
+
+Il semble effectivement, qu'il y ait une différence de survie entre les différentes observations.
+
+\section{Modèle logistique sur la longueur}
+On souhaite savoir si la longueur a une influence sur la survie des plans de pruniers.
+
+Pour celà, on définit le modèle 
+
+$$\mbox{M1} \left \lbrace \begin{array}{rl} 
+    Y_{ij} & \overset{ind}{\sim}\mathcal{B}(n_{ij}, p_{i} ) \\
+    logit(p_{i})&=\mu +\alpha_i
+  \end{array} \right.
+$$
+
+Ce moèle n'est pas identifiable, on doit ajouter une contrainte. La contrainte utilisée par \verb+R+ est $\alpha_1=0$.
+<<>>=
+glm1 <- glm(cbind(Vivant,Mort)~Longueur, family=binomial(logit), data=prune.mod)
+summary(glm1)
+@ 
+
+Les tests présentés dans la commande summary, sont les tests portant sur la nullité des paramètres et utilisent la normalité asymptotique des estimateurs du maximum de vraisemblance. Ici on voit que la statistique est notée \verb+z+ sur la troisième colonne, ce qui correspond à un test où la variance asymptotique des estimateurs est connue (sinon on aurait un test de student).
+
+On peut tester le modèle M1 contre le modèle M0, pour tester l'existence d'un effet de la longueur de coupe sur la survie.
+ M0 désigne le modèle nul :
+
+$$\mbox{M0} \left \lbrace \begin{array}{rl} 
+    Y_{ij} & \overset{ind}{\sim}\mathcal{B}(n_{ij}, p ) \\
+    logit(p_{i})&=\mu 
+  \end{array} \right.
+$$
+
+ 
+<<>>=
+anova(glm1, test="Chisq")
+@ 
+Ici la déviance expliquée par le passage du modèle M0 au modèle M1 vaut 45.8. Sous l'hypothèse H0 : ``les deux modèles M0 et M1 sont équivalents'', cette statistique suit une loi du Chi 2 à 1 degré de liberté. La probabilité critique associé à ce test vaut $1.285e-11$, on rejette donc H0. La déviance résiduelle vaut 105.18, c'est la déviance qui reste inexpliquée par le modèle.
+
+
+\section{Modèle logistique sur la longueur et date}
+On souhaite savoir si la date ou la longueur de coupe ont un effet sur la survie des plans de pruniers.
+
+Pour cela, on pose le modèle 
+
+$$\mbox{Mint} \left \lbrace \begin{array}{rl} 
+    Y_{ij} & \overset{ind}{\sim}\mathcal{B}(n_{ij}, p_{ij} ) \\
+    logit(p_{i})&=\mu +\alpha_i+\beta_j+\gamma_{ij}
+  \end{array} \right.
+$$
+
+Dans \verb+R+, on utilise les commandes suivantes pour estimer les paramètres du modèle.
+
+<<>>=
+glmint <- glm(cbind(Vivant,Mort)~Date+Longueur+Longueur*Date, family=binomial(logit), data=prune.mod)
+summary(glmint)
+@
+
+<<>>=
+library(car)
+anova(glmint, test="Chisq")
+Anova(glmint, test="LR")
+@
+
+La commande \verb+anova+ donne les tests de type I, tandis que la commande \verb+Anova+ donne les tests de type II. 
+
+En introduisant le modèle M12, le modèle a 2 facteurs sans interactions, on peut résumer la décomposition de la deviance dans la figure \ref{fig:1}
+
+\begin{figure}[!Htbp]
+\includegraphics[width=12cm, height=5cm]{DecomositionDeviancePrunier}
+\caption{Décomposition de la déviance pour le modèle d'analyse de la variance à deux facteurs avec interaction}
+\label{fig:1}
+\end{figure}
+\end{document}
